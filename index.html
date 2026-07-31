@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sai Kaung Si Thu — Architecture &amp; Computational Design</title>
+<meta name="description" content="Portfolio of Sai Kaung Si Thu, graduate architect based in Bangkok working at the intersection of physical craft and computational process.">
+<meta name="theme-color" content="#ffffff" id="themeColor">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS
+   Weight system — three registers, never mixed:
+     display  200  (h1, lead sentences)
+     body     400  (running prose, descriptions)
+     data     500  (labels, values, titles, nav, credits)
+   ============================================================ */
+:root{
+  --cw:150px;
+  --paper:#ffffff;
+  --ink:#0f0f0f;
+  --ink-mid:#5e5e5e;
+  --ink-soft:#8c8c8c;
+  --rule:#e0e0e0;
+  --rule-strong:#c9c9c9;
+  --fill:#f0f0f0;
+  --ph-a:#f5f5f5;
+  --ph-b:#eaeaea;
+  --nav-h:58px;
+  --rail:196px;
+  --gut:26px;
+  --max:1620px;
+  --t:.3s cubic-bezier(.2,.6,.2,1);
+}
+html[data-theme="dark"]{
+  --paper:#0c0c0c;
+  --ink:#f4f4f4;
+  --ink-mid:#9b9b9b;
+  --ink-soft:#6d6d6d;
+  --rule:#232323;
+  --rule-strong:#333333;
+  --fill:#171717;
+  --ph-a:#161616;
+  --ph-b:#1c1c1c;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Poppins',Helvetica,Arial,sans-serif;
+  font-weight:400;font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  transition:background-color var(--t),color var(--t);
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+:focus-visible{outline:1.5px solid var(--ink);outline-offset:3px}
+svg{stroke:currentColor}
+
+/* ---------- shared type ---------- */
+.display{font-weight:200;letter-spacing:-.03em;line-height:1.06}
+.lead{font-weight:200;font-size:clamp(19px,2vw,24px);line-height:1.48;letter-spacing:-.012em;max-width:46ch}
+.meta-label{
+  font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  font-weight:500;font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--ink-soft);
+}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:400}
+
+/* ---------- header ---------- */
+header{
+  position:fixed;inset:0 0 auto 0;z-index:70;background:var(--paper);
+  border-bottom:1px solid var(--rule);transition:background-color var(--t),border-color var(--t);
+}
+.bar{height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 var(--gut)}
+.mark{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:500;white-space:nowrap}
+.mark span{color:var(--ink-soft);font-weight:400}
+.rightset{display:flex;align-items:center;gap:26px}
+nav.primary{display:flex;gap:24px;align-items:center}
+nav.primary a{
+  font-size:12px;letter-spacing:.09em;text-transform:uppercase;font-weight:400;color:var(--ink-mid);
+  padding:3px 0;border-bottom:1px solid transparent;transition:color var(--t),border-color var(--t);
+}
+nav.primary a:hover{color:var(--ink)}
+nav.primary a.on{color:var(--ink);font-weight:500;border-color:var(--ink)}
+
+/* theme toggle — sits beside the menu */
+.theme{
+  display:flex;align-items:center;gap:0;border:1px solid var(--rule-strong);border-radius:999px;
+  padding:2px;transition:border-color var(--t);
+}
+.theme button{
+  font-family:'JetBrains Mono',monospace;font-weight:500;font-size:9.5px;letter-spacing:.12em;
+  padding:5px 10px;border-radius:999px;color:var(--ink-soft);line-height:1;transition:all var(--t);
+}
+.theme button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.burger{display:none;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:500}
+
+/* ---------- category chips (informal, in-page) ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.filter{
+  display:inline-flex;align-items:baseline;gap:7px;
+  padding:7px 14px;border:1px solid var(--rule-strong);border-radius:999px;
+  font-size:12.5px;font-weight:400;color:var(--ink-mid);
+  transition:color var(--t),border-color var(--t),background-color var(--t);
+}
+.filter .n{font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:500;color:var(--ink-soft)}
+.filter:hover{color:var(--ink);border-color:var(--ink)}
+.filter.on{background:var(--ink);border-color:var(--ink);color:var(--paper);font-weight:500}
+.filter.on .n{color:var(--paper);opacity:.65}
+
+/* ---------- index header band ----------
+   Title and philosophy run horizontally across the top; the canvas takes
+   everything below. The two anchors of the sentence are set bold and the
+   hinge between them light, so it reads as two poles joined. */
+/* full-bleed: the projects view uses the whole window, like the header bar */
+.index-head{padding:12px var(--gut) 20px}
+.hero{
+  margin:0;font-size:clamp(25px,3.3vw,53px);line-height:1.08;max-width:none;
+  text-wrap:balance;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em;
+}
+.hero span{
+  display:inline-block;opacity:0;
+  transform:translateY(.62em) scale(.965);
+  animation:heroUp .95s cubic-bezier(.19,.78,.2,1) forwards;
+  animation-delay:calc(var(--k,0) * .12s + .1s);
+}
+@keyframes heroUp{to{opacity:1;transform:none}}
+.hero .hb{font-weight:600;letter-spacing:-.036em}
+.hero .hl{font-weight:200;letter-spacing:-.014em;color:var(--ink-mid)}
+.head-row,.index-head .chips{opacity:0;animation:heroUp .8s cubic-bezier(.19,.78,.2,1) forwards}
+.head-row{animation-delay:.46s}
+.index-head .chips{animation-delay:.58s}
+@media(prefers-reduced-motion:reduce){
+  .hero span,.head-row,.index-head .chips{opacity:1;transform:none;animation:none}
+}
+.head-row{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:44px;
+  margin-top:24px;padding-bottom:18px;border-bottom:1px solid var(--rule);
+}
+.head-row .sub{
+  /* two columns, the way the project briefs are set in the portfolio itself */
+  margin:0;flex:1 1 auto;max-width:960px;
+  columns:2;column-gap:36px;column-rule:1px solid var(--rule);
+  color:var(--ink-mid);font-size:14px;font-weight:400;line-height:1.64;
+  text-align:justify;hyphens:auto;
+}
+.head-row .sub strong{font-weight:500;color:var(--ink)}
+.head-meta{
+  display:flex;flex-direction:column;gap:7px;text-align:right;
+  flex:0 0 auto;white-space:nowrap;
+}
+.index-head .chips{margin-top:18px}
+
+/* ---------- opening sequence ----------
+   The mark is the Payan vault: a base, two halves of a pointed arch, and its
+   ribs. It draws itself, breaks into nodes, and the nodes scatter as the
+   overlay lifts onto the network canvas. */
+#intro{
+  position:fixed;inset:0;z-index:999;background:var(--paper);
+  display:grid;place-items:center;
+  transition:opacity .5s ease,transform .5s ease;
+}
+#intro.done{opacity:0;transform:scale(1.03);pointer-events:none}
+body.intro-lock{overflow:hidden}
+.intro-in{display:flex;flex-direction:column;align-items:center}
+.mk{width:min(34vmin,240px);height:auto;color:var(--ink);overflow:visible;display:block}
+.mk .s{
+  fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:square;
+  stroke-dasharray:460;stroke-dashoffset:460;
+  animation:mkDraw .95s cubic-bezier(.35,0,.15,1) forwards var(--d,0s),
+            mkFade .45s ease forwards 1.9s;
+}
+@keyframes mkDraw{to{stroke-dashoffset:0}}
+@keyframes mkFade{to{opacity:0}}
+.mk .nd{
+  fill:currentColor;stroke:none;opacity:0;
+  transform-box:fill-box;transform-origin:center;
+  animation:ndIn .28s ease forwards 1.55s,
+            ndOut .85s cubic-bezier(.3,0,.2,1) forwards 2.0s;
+}
+@keyframes ndIn{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
+@keyframes ndOut{to{transform:translate(var(--dx),var(--dy)) scale(.5);opacity:0}}
+.intro-word{
+  margin-top:24px;text-align:center;opacity:0;
+  animation:wordIn .7s cubic-bezier(.2,.7,.2,1) forwards 1.05s,
+            mkFade .45s ease forwards 2.15s;
+}
+@keyframes wordIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.intro-name{
+  font-size:12px;font-weight:500;letter-spacing:.42em;text-transform:uppercase;
+  color:var(--ink);margin:0 0 9px;padding-left:.42em;
+}
+.intro-sub{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
+  font-size:8.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft);margin:0;
+  padding-left:.24em;
+}
+.intro-skip{
+  position:absolute;bottom:26px;left:50%;transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace;font-weight:500;font-size:8.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-soft);opacity:0;
+  animation:wordIn .6s ease forwards 1.6s;
+}
+@media(prefers-reduced-motion:reduce){
+  .mk .s{stroke-dashoffset:0;animation:none}
+  .mk .nd,.intro-skip{display:none}
+  .intro-word{opacity:1;animation:none}
+}
+
+/* ---------- network canvas ----------
+   Project nodes are cards; theme nodes are dots. Everything drifts slowly
+   around its place in the graph, so the layout stays readable while it floats.
+   Card proportions are the same as before, scaled to 0.70. */
+/* the graph now takes the full width */
+.netwrap{
+  position:relative;overflow:hidden;
+  margin:18px var(--gut) 60px;
+  height:clamp(560px, calc(100vh - 244px), 1040px);
+}
+
+.net-edges{position:absolute;inset:0;width:100%;height:100%}
+.net-edges line{stroke:var(--ink);stroke-width:1;opacity:.12;transition:opacity .3s,stroke-width .3s}
+.net-edges line.hot{opacity:.8;stroke-width:1.4}
+.net-edges line.cold{opacity:.035}
+.node{
+  position:absolute;left:0;top:0;transform-origin:50% 50%;
+  cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;
+  transition:opacity .3s;
+}
+.node.grabbing{cursor:grabbing}
+/* the cards carry an entrance animation with fill-mode:forwards, which
+   outranks a normal declaration — so the faded states need !important */
+.node.cold{opacity:.14 !important}
+.node.dim{opacity:.07 !important;pointer-events:none}
+.n-proj.cold,.n-proj.dim{filter:grayscale(1)}
+.n-proj.cold .frame,.n-proj.dim .frame{background:var(--fill)}
+.node{transition:opacity .32s ease,filter .32s ease}
+
+/* project card node — 4:3 image, name, year */
+.n-proj{
+  width:var(--cw,150px);background:var(--paper);border:1px solid var(--rule-strong);
+  padding:calc(var(--cw,150px) * .04) calc(var(--cw,150px) * .04) 0;
+  opacity:0;animation:cardIn .6s cubic-bezier(.2,.7,.2,1) forwards;
+  animation-delay:calc(var(--i,0) * 70ms);
+  transition:border-color var(--t),background-color var(--t),box-shadow var(--t),opacity .3s;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(18px)}to{opacity:1}}
+.n-proj .frame{
+  position:relative;display:block;width:100%;aspect-ratio:4/3;
+  background:var(--fill);overflow:hidden;
+}
+.n-proj .frame .shotimg,.n-proj .frame .ph{transition:transform .8s cubic-bezier(.2,.6,.2,1)}
+.n-proj:hover .frame .shotimg,.n-proj:hover .frame .ph{transform:scale(1.05)}
+.n-proj .frame::after{
+  content:'';position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--ink);
+  transition:width .45s cubic-bezier(.2,.7,.2,1);z-index:3;
+}
+.n-proj:hover .frame::after{width:100%}
+.n-proj .c-name{
+  display:block;margin:calc(var(--cw,150px) * .053) 1px 0;
+  font-size:calc(var(--cw,150px) * .0733);font-weight:500;letter-spacing:-.01em;
+  line-height:1.25;transition:color var(--t);
+}
+.n-proj .c-year{
+  display:block;margin:calc(var(--cw,150px) * .027) 1px calc(var(--cw,150px) * .06);
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
+  font-size:calc(var(--cw,150px) * .05);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
+}
+.n-proj:hover{border-color:var(--ink);z-index:60}
+.n-proj.grabbing{border-color:var(--ink);box-shadow:0 18px 44px rgba(0,0,0,.20);z-index:80}
+html[data-theme="dark"] .n-proj.grabbing{box-shadow:0 18px 44px rgba(0,0,0,.6)}
+.n-proj.pinned{border-color:var(--ink)}
+.n-proj img{pointer-events:none}
+
+/* theme node */
+.n-theme{width:2px}
+.n-theme .dot{
+  display:block;width:9px;height:9px;margin:0 auto;border-radius:50%;
+  background:var(--paper);border:1px solid var(--ink-soft);
+  transition:border-color var(--t),background-color var(--t),transform .3s cubic-bezier(.2,.7,.2,1);
+}
+.n-theme .cap{
+  display:block;position:relative;left:50%;transform:translateX(-50%);
+  margin-top:6px;white-space:nowrap;
+  font-family:'JetBrains Mono',monospace;font-weight:500;font-size:8.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-soft);transition:color var(--t);
+}
+.n-theme:hover .dot{background:var(--ink);border-color:var(--ink);transform:scale(1.5)}
+.n-theme:hover .cap,.n-theme.on .cap{color:var(--ink)}
+.n-theme.on .dot{background:var(--ink);border-color:var(--ink)}
+.n-theme.pinned .dot{border-width:2px;border-color:var(--ink)}
+
+/* ---------- parametric dot field ----------
+   A scatter of still dots that periodically migrates into a set of
+   swept parametric wave — the only pattern the background draws — holds,
+   then disperses again. No
+   twinkling: the movement is the whole event. */
+.sky{position:fixed;inset:0;z-index:0;pointer-events:none;color:var(--ink)}
+.sky svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.sky #skyRibWrap,.sky #skyExtraWrap{will-change:opacity}
+.sky circle{fill:currentColor}
+/* Twinkle is driven from the frame loop, not by CSS. Eighteen concurrent
+   SVG keyframe animations cost ~30fps even when their values never changed;
+   eighteen attribute writes per frame cost nothing. Dots are shared across
+   six bands with random membership, so the shimmer still reads per-dot. */
+/* the sweep is deliberately NOT animated: a continuous animation on this
+   layer would repaint 2,496 dots every frame */
+@media(prefers-reduced-motion:reduce){
+  .sky circle,.sky .ribbon path{animation:none}
+}
+.sky .d-far  {opacity:.135}
+.sky .d-near {opacity:.215}
+.sky .d-extra{opacity:.155}
+.sky .ribbon path{
+  /* every dot is a zero-ish-length subpath with a round cap: explicit dot
+     positions, and none of the cost of a dashed stroke */
+  fill:none;stroke:currentColor;stroke-linecap:round;
+}
+.sky .ribbon .r1{stroke-width:1}
+.sky .ribbon .r2{stroke-width:1.5}
+.sky .ribbon .r3{stroke-width:2}
+.sky .ribbon{opacity:.165}
+html[data-theme="dark"] .sky .d-far  {opacity:.17}
+html[data-theme="dark"] .sky .d-near {opacity:.285}
+html[data-theme="dark"] .sky .d-extra{opacity:.20}
+html[data-theme="dark"] .sky .ribbon{opacity:.225}
+
+/* keep the page above nothing in particular, but the header is fixed */
+/* footer sits at the bottom even when a page is short */
+.shell{
+  /* the header is --nav-h tall PLUS a 1px bottom rule, or content tucks
+     under the rule by a pixel */
+  position:relative;z-index:1;padding-top:calc(var(--nav-h) + 1px);
+  min-height:100vh;box-sizing:border-box;display:flex;flex-direction:column;
+}
+.shell > main{flex:1 0 auto}
+.shell > footer{flex:0 0 auto}
+
+/* ---------- real imagery ---------- */
+.shotimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.shotimg.fit{object-fit:contain;background:#ededed;padding:2.5%}
+.idxbadge{
+  position:absolute;left:12px;bottom:10px;z-index:2;
+  font-family:'JetBrains Mono',monospace;font-weight:500;font-size:9.5px;letter-spacing:.1em;
+  color:#fff;text-shadow:0 1px 7px rgba(0,0,0,.6);
+}
+.shot-free{margin:42px 0;padding:0}
+.duo .shot-free{margin:0}
+.freeimg{width:100%;height:auto;display:block;background:var(--fill)}
+.freeimg.fit{background:#ededed;padding:1.5%}
+.phbox{position:relative;width:100%;aspect-ratio:16/9;background:var(--fill);overflow:hidden}
+
+/* diagram sequence */
+.seq{margin:54px 0;border-top:1px solid var(--rule);padding-top:24px}
+.seq-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px}
+.seq-nav{display:flex;gap:16px}
+.seq-nav button{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--ink-soft);transition:color var(--t)}
+.seq-nav button:hover{color:var(--ink)}
+.seq-stage{position:relative;width:100%;aspect-ratio:16/9;background:var(--fill);overflow:hidden}
+.seq-slide{position:absolute;inset:0;opacity:0;transition:opacity .45s ease}
+.seq-slide.on{opacity:1}
+.seq-cap{margin-top:18px;max-width:70ch;font-size:15px;font-weight:400;color:var(--ink-mid);min-height:3.4em}
+.seq-cap b{font-weight:500;letter-spacing:.05em;text-transform:uppercase;font-size:12.5px;color:var(--ink)}
+
+/* credits */
+/* ---------- project page measures (restored) ---------- */
+.title-block{
+  max-width:var(--max);margin:0 auto;padding:34px var(--gut) 0;
+  display:grid;grid-template-columns:52px 1fr auto;gap:0 20px;align-items:start;
+}
+.title-block h1{margin:0;font-size:clamp(26px,3.2vw,44px);max-width:20ch}
+.title-block .place{color:var(--ink-mid);margin-top:9px;font-size:14px;font-weight:400}
+.glyph{width:52px;height:52px;margin-top:5px;color:var(--ink)}
+.glyph svg{width:100%;height:100%;display:block}
+.share{display:flex;gap:16px;padding-top:10px}
+.share a{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--ink-soft);transition:color var(--t)}
+.share a:hover{color:var(--ink)}
+.facts{
+  max-width:var(--max);margin:0 auto;padding:36px var(--gut) 42px;
+  display:grid;grid-template-columns:repeat(5,1fr);gap:24px;border-bottom:1px solid var(--rule);
+}
+.fact dt{margin:0 0 8px}
+.fact dd{margin:0;font-size:14px;font-weight:500;letter-spacing:-.005em}
+.stack{max-width:var(--max);margin:0 auto;padding:0 var(--gut)}
+.prose{max-width:74ch;margin:50px 0}
+.prose .body-copy{font-size:16px;line-height:1.75;font-weight:400;color:var(--ink-mid)}
+.prose .body-copy p+p{margin-top:1.15em}
+.prose .lead{margin:16px 0 26px;color:var(--ink)}
+
+.credits{
+  max-width:var(--max);padding:66px var(--gut) 18px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:32px;border-top:1px solid var(--rule);
+}
+.credits h3{margin:0 0 12px;font-size:13px;font-weight:500}
+.credits ul{margin:0;padding:0;list-style:none;color:var(--ink-mid);font-size:14px;font-weight:400}
+.credits li{margin-bottom:5px}
+
+.pager{
+  max-width:var(--max);padding:40px var(--gut) 76px;margin-top:38px;
+  display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--rule);
+}
+.pager button{font-size:14px;font-weight:500;color:var(--ink-mid);transition:color var(--t)}
+.pager button:hover{color:var(--ink)}
+
+/* ---------- static pages ---------- */
+/* full-bleed like the projects view; the measures live on the text itself */
+.page{padding:14px var(--gut) 84px}
+.page h1{font-size:clamp(28px,3.5vw,48px);margin:0 0 42px;max-width:18ch}
+.cols{display:grid;grid-template-columns:minmax(280px,.75fr) 1.6fr;gap:clamp(40px,4vw,90px)}
+.rows{border-top:1px solid var(--rule)}
+.row{display:grid;grid-template-columns:120px minmax(0,1fr);gap:24px;padding:17px 0;border-bottom:1px solid var(--rule);align-items:start}
+.row .y{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:11px;letter-spacing:.06em;color:var(--ink-soft);padding-top:3px}
+.row strong{font-weight:500;font-size:15px}
+.row p{margin:5px 0 0;color:var(--ink-mid);font-size:14px;font-weight:400;max-width:88ch}
+.row p.deliver{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
+  font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-soft);margin-top:10px;line-height:1.7;
+}
+.block+.block{margin-top:42px}
+.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px;margin-top:16px}
+.skills p{margin:0 0 14px}
+.skills strong{font-weight:500;font-size:14px}
+.skills span{color:var(--ink-mid);font-weight:400;font-size:14px}
+.portrait{margin:0 0 26px;position:relative;overflow:hidden;background:var(--fill);isolation:isolate}
+/* the base image is the plain black-and-white portrait; the glitch only
+   arrives in short bursts on two out-of-phase clocks, so it is sometimes
+   a single hit, sometimes a double, and most of the time not there at all */
+.portrait img{width:100%;height:auto;display:block;filter:grayscale(1) contrast(1.04)}
+.portrait .gl{position:absolute;inset:0;pointer-events:none;opacity:0}
+.portrait .gl img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.portrait .g1{mix-blend-mode:screen;animation:burstA 5.2s steps(1,end) infinite}
+.portrait .g2{mix-blend-mode:multiply;animation:burstB 7.9s steps(1,end) infinite}
+.portrait .g3{animation:burstC 11.7s steps(1,end) infinite}
+/* short, sharp hits — roughly a third of a second each */
+@keyframes burstA{
+  0%,74%    {opacity:0;  clip-path:inset(100% 0 0 0); transform:translateX(0)}
+  75%       {opacity:.95;clip-path:inset(13% 0 73% 0);transform:translateX(-10px)}
+  77%       {opacity:.9; clip-path:inset(51% 0 35% 0);transform:translateX(8px)}
+  78.5%     {opacity:0;  clip-path:inset(100% 0 0 0)}
+  80.5%     {opacity:.9; clip-path:inset(30% 0 59% 0);transform:translateX(12px)}
+  82%,100%  {opacity:0;  clip-path:inset(100% 0 0 0); transform:translateX(0)}
+}
+@keyframes burstB{
+  0%,56%    {opacity:0;  clip-path:inset(100% 0 0 0); transform:translateX(0)}
+  57.2%     {opacity:.85;clip-path:inset(40% 0 49% 0);transform:translateX(9px)}
+  58.6%     {opacity:0;  clip-path:inset(100% 0 0 0)}
+  60%       {opacity:.8; clip-path:inset(21% 0 66% 0);transform:translateX(-11px)}
+  61.4%,100%{opacity:0;  clip-path:inset(100% 0 0 0); transform:translateX(0)}
+}
+/* a rare whole-frame hit */
+@keyframes burstC{
+  0%,91%    {opacity:0}
+  91.8%     {opacity:.5}
+  92.6%     {opacity:0}
+  93.4%     {opacity:.3}
+  94.2%,100%{opacity:0}
+}
+/* the scan sweep only travels during a burst */
+.portrait .sweep{
+  position:absolute;left:0;right:0;height:16%;pointer-events:none;z-index:3;opacity:0;
+  background:linear-gradient(to bottom,transparent,rgba(255,255,255,.16),transparent);
+  animation:sweepY 5.2s linear infinite;
+}
+html[data-theme="dark"] .portrait .sweep{background:linear-gradient(to bottom,transparent,rgba(255,255,255,.10),transparent)}
+@keyframes sweepY{
+  0%,73.5%  {top:-18%;opacity:0}
+  74%       {top:-18%;opacity:1}
+  82%       {top:104%;opacity:1}
+  82.5%,100%{top:104%;opacity:0}
+}
+.portrait::after{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:4;
+  background:repeating-linear-gradient(to bottom,rgba(0,0,0,.07) 0 1px,transparent 1px 3px);
+  mix-blend-mode:multiply;
+}
+html[data-theme="dark"] .portrait::after{mix-blend-mode:screen;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.04) 0 1px,transparent 1px 3px)}
+@media(prefers-reduced-motion:reduce){
+  .portrait .gl,.portrait .sweep{animation:none;display:none}
+}
+.linkline{border-bottom:1px solid var(--rule-strong);transition:border-color var(--t)}
+.linkline:hover{border-color:var(--ink)}
+
+/* ---------- footer ----------
+   One band: contact on the left, downloads on the right, fine print below.
+   Everything cut from here already lives on the About or Contact page. */
+footer{border-top:1px solid var(--rule)}
+.fbar{
+  padding:22px var(--gut) 24px;
+  display:flex;justify-content:space-between;align-items:baseline;gap:20px 34px;flex-wrap:wrap;
+}
+.fset{display:flex;gap:24px;flex-wrap:wrap;font-size:13px}
+.fset a{color:var(--ink-mid);border-bottom:1px solid transparent;transition:color var(--t),border-color var(--t)}
+.fset a:hover{color:var(--ink);border-color:var(--ink)}
+.fset a.key{color:var(--ink);font-weight:500}
+.fcopy{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;font-size:9px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);align-self:center;
+}
+
+/* ---------- responsive ---------- */
+@media(max-width:1320px){ :root{--cw:134px} }
+@media(max-width:1100px){ :root{--cw:120px} }
+@media(max-width:1180px){
+  .netwrap{height:clamp(520px, calc(100vh - 264px), 940px)}
+  .n-theme .cap{font-size:8px;letter-spacing:.1em}
+  .netwrap{height:clamp(520px, calc(100vh - 264px), 940px)}
+  .n-theme .cap{font-size:8px;letter-spacing:.1em}
+  .facts{grid-template-columns:repeat(3,1fr)}
+  .credits{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+  :root{--gut:18px}
+  .burger{display:block}
+  .rightset{gap:14px}
+  nav.primary{
+    position:fixed;top:var(--nav-h);left:0;right:0;background:var(--paper);flex-direction:column;
+    align-items:flex-start;gap:0;padding:0 var(--gut);border-bottom:1px solid var(--rule);
+    max-height:0;overflow:hidden;transition:max-height var(--t);z-index:65;
+  }
+  nav.primary.open{max-height:320px}
+  nav.primary a{width:100%;padding:15px 0;border-bottom:1px solid var(--rule);font-size:13px}
+  /* card field reflows to a simple grid; cards keep the flip, lose the scatter */
+  .shell{padding-top:1px}
+  body{padding-top:calc(var(--nav-h) + 1px)}
+  /* no room to drift on a phone — cards stack, threads hide */
+  .index-head{padding:12px var(--gut) 16px}
+  .head-row{flex-direction:column;align-items:flex-start;gap:18px}
+  .head-row .sub{columns:1;column-rule:none;max-width:none;text-align:left}
+  .head-meta{text-align:left;flex-direction:row;gap:16px;flex-wrap:wrap;white-space:normal}
+  .netwrap{position:static;height:auto!important;display:grid;grid-template-columns:1fr;gap:26px;margin:20px var(--gut) 48px}
+  .node{position:static!important;transform:none!important;opacity:1!important}
+  .n-proj{width:auto!important}
+  .n-theme,.net-edges,  .title-block{grid-template-columns:1fr;gap:16px}
+  .glyph{width:44px;height:44px}
+  .share{padding-top:0}
+  .facts{grid-template-columns:repeat(2,1fr)}
+  .duo{grid-template-columns:1fr}
+  .duo .full{aspect-ratio:4/3}
+  .cols{grid-template-columns:1fr;gap:34px}
+  .row{grid-template-columns:1fr;gap:2px}
+  .skills{grid-template-columns:1fr}
+  .credits{grid-template-columns:1fr}
+  .fbar{flex-direction:column;gap:14px}
+  .fset{gap:8px 20px;font-size:12.5px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+.view{animation:fade .45s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<div id="intro" role="presentation">
+  <div class="intro-in">
+    <svg class="mk" viewBox="0 0 200 200" aria-hidden="true">
+      <!-- base -->
+      <path class="s" style="--d:0s"    d="M12 180 H188"/>
+      <!-- outer pointed arch -->
+      <path class="s" style="--d:.16s"  d="M22 180 V96 Q22 46 100 24"/>
+      <path class="s" style="--d:.16s"  d="M178 180 V96 Q178 46 100 24"/>
+      <!-- ribs -->
+      <path class="s" style="--d:.38s"  d="M52 180 V108 Q52 74 100 58"/>
+      <path class="s" style="--d:.38s"  d="M148 180 V108 Q148 74 100 58"/>
+      <path class="s" style="--d:.56s"  d="M80 180 V124 Q80 104 100 96"/>
+      <path class="s" style="--d:.56s"  d="M120 180 V124 Q120 104 100 96"/>
+      <!-- the nodes the mark breaks into -->
+      <circle class="nd" cx="100" cy="24"  r="3.4"/>
+      <circle class="nd" cx="100" cy="58"  r="2.8"/>
+      <circle class="nd" cx="100" cy="96"  r="2.4"/>
+      <circle class="nd" cx="22"  cy="96"  r="2.6"/>
+      <circle class="nd" cx="178" cy="96"  r="2.6"/>
+      <circle class="nd" cx="52"  cy="108" r="2.2"/>
+      <circle class="nd" cx="148" cy="108" r="2.2"/>
+      <circle class="nd" cx="80"  cy="124" r="2"/>
+      <circle class="nd" cx="120" cy="124" r="2"/>
+      <circle class="nd" cx="22"  cy="180" r="2.6"/>
+      <circle class="nd" cx="178" cy="180" r="2.6"/>
+      <circle class="nd" cx="100" cy="180" r="2.4"/>
+    </svg>
+    <div class="intro-word">
+      <p class="intro-name">Sai Kaung Si Thu</p>
+      <p class="intro-sub">Architecture · Computational Design</p>
+    </div>
+  </div>
+  <span class="intro-skip">Click to skip</span>
+</div>
+
+<header>
+  <div class="bar">
+    <a class="mark" href="#/" data-link id="mark" title="Projects — click again to reset the layout">Sai Kaung Si Thu <span>— Portfolio 2026</span></a>
+    <div class="rightset">
+      <nav class="primary" id="nav">
+        <a href="#/" data-link data-nav="index">Projects</a>
+        <a href="#/about" data-link data-nav="about">About</a>
+        <a href="#/services" data-link data-nav="services">Services</a>
+        <a href="#/contact" data-link data-nav="contact">Contact</a>
+      </nav>
+      <div class="theme" role="group" aria-label="Colour theme">
+        <button id="lightBtn" aria-pressed="true">Light</button>
+        <button id="darkBtn" aria-pressed="false">Dark</button>
+      </div>
+      <button class="burger" id="burger" aria-expanded="false" aria-controls="nav">Menu</button>
+    </div>
+  </div>
+</header>
+
+<div class="sky" id="sky" aria-hidden="true">
+  <svg id="skyRib" preserveAspectRatio="none"></svg>
+  <svg id="skyDots" preserveAspectRatio="none"></svg>
+</div>
+
+<div class="shell">
+  <main id="app"></main>
+
+  <footer>
+    <div class="fbar">
+      <div class="fset">
+        <a class="key" href="mailto:work.bysaikaung@gmail.com">work.bysaikaung@gmail.com</a>
+        <a href="tel:+66930516020">+66 93 051 6020</a>
+        <span class="fcopy">© 2026 Sai Kaung Si Thu — Bangkok</span>
+      </div>
+      <div class="fset">
+        <a href="https://www.linkedin.com/in/saikaungsithu" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="#/contact" data-link>Curriculum vitae</a>
+        <a href="#/contact" data-link>Portfolio PDF</a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+/* ---------- parametric dot field ---------- */
+(function dotField(){
+  const host = document.getElementById('sky');
+  if(!host) return;
+  const svgRib  = host.querySelector('#skyRib');    // heavy, repainted rarely
+  const svgDots = host.querySelector('#skyDots');   // light, twinkles freely
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const SPINES = 6, PER = 18, BASE = SPINES * PER;  // 108 dots at rest
+  const SPLIT = 1, EXTRA = BASE * SPLIT;            // each splits in two
+  const SLOTS = PER * (SPLIT + 1);
+  const RIB = 26, RPT = 96;                         // swept lines, points per line
+
+  // r runs 0..1 across the set, so the same wave can be sampled at any
+  // density — six spines carry the dots, twenty-six lines carry the sweep.
+  //
+  // Every variant is the same construction and nothing else appears:
+  //   midline drift  + band of lines fanned by a per-line phase offset,
+  //   the band width modulated by an envelope so it pinches to a waist and
+  //   opens out again. That is what makes the reference sweeps read.
+  const TAU = Math.PI * 2;
+  const WAVE = [
+    {MID:.50, A:.30, F:1.05, S:.34, B:.10, F2:.55, P:.00, K:1.0, Q:.20},
+    {MID:.49, A:.30, F:1.35, S:.46, B:.11, F2:.80, P:.35, K:1.5, Q:.55},
+    {MID:.51, A:.34, F:0.80, S:.26, B:.08, F2:1.15,P:.60, K:1.2, Q:.00},
+    {MID:.50, A:.28, F:1.70, S:.40, B:.12, F2:.60, P:.20, K:2.0, Q:.35},
+    {MID:.49, A:.33, F:1.00, S:.54, B:.09, F2:.95, P:.80, K:1.0, Q:.62},
+    {MID:.51, A:.31, F:1.25, S:.20, B:.12, F2:.45, P:.45, K:1.7, Q:.15}
+  ];
+  const FAM = WAVE.map(v => (r,t) => {
+    const env = .06 + .94*Math.abs(Math.sin(Math.PI*(t*v.K + v.Q)));
+    return [
+      .02 + t*.96,
+      v.MID + v.B*Math.sin(TAU*(t*v.F2 + v.P))
+            + v.A*env*Math.sin(TAU*(t*v.F + r*v.S))
+    ];
+  });
+
+  const rnd = n => { const s = Math.sin(n*127.1)*43758.5453; return s - Math.floor(s); };
+  // six twinkle bands, six periods that do not divide into each other
+  const TWN = 6;
+  const PER_S = [5.2, 6.7, 8.1, 9.4, 11.3, 12.6];
+  const OFF_S = [-0.9, -2.6, -4.2, -1.7, -6.3, -3.4];
+  const scatter = off => Array.from({length:BASE}, (_,i)=>[
+    .02 + rnd(off + i*1.7)*.96,
+    .03 + rnd(off + i*3.9 + 11)*.94
+  ]);
+  const spineR = i => (SPINES === 1 ? 0 : Math.floor(i/PER)/(SPINES-1));
+  const curveBase  = f => Array.from({length:BASE},  (_,i)=>
+    FAM[f](spineR(i), ((i%PER)*(SPLIT+1)) / (SLOTS-1)));
+  const curveExtra = f => Array.from({length:EXTRA}, (_,j)=>{
+    const i = Math.floor(j/SPLIT), k = j%SPLIT;
+    return FAM[f](spineR(i), ((i%PER)*(SPLIT+1) + k + 1) / (SLOTS-1));
+  });
+  const parentOf = arr => Array.from({length:EXTRA}, (_,j)=>arr[Math.floor(j/SPLIT)]);
+
+  let seed = 1, fam = 0;
+  let from = scatter(seed), to = scatter(seed += 97);
+  let cur = curveBase(fam), curE = curveExtra(fam);
+
+  let W = 0, H = 0, baseEls = [], extraEls = [], ribEls = [], groups = [], wrap = null, ribWrap = null;
+  let farIdx = [], nearIdx = [], exIdx = [], twBands = [];
+  function build(){
+    W = host.clientWidth || 1; H = host.clientHeight || 1;
+    let far = '', near = '', ex = '';
+    const band = k => Math.floor(rnd(k*9.7+41) * TWN) % TWN;
+    const open = g => `<g class="tw" data-tw="${g}">`;
+
+    const farB = Array.from({length:TWN},()=>''), nearB = Array.from({length:TWN},()=>'');
+    const exB  = Array.from({length:TWN},()=>'');
+    farIdx = Array.from({length:TWN},()=>[]); nearIdx = Array.from({length:TWN},()=>[]);
+    exIdx  = Array.from({length:TWN},()=>[]);
+    for(let i=0;i<BASE;i++){
+      const g = band(i), r = 0.8 + rnd(i*5.3+29)*1.0;
+      const c = `<circle r="${r.toFixed(2)}"/>`;
+      if(i % 3 === 0){ nearB[g] += c; nearIdx[g].push(i); }
+      else           { farB[g]  += c; farIdx[g].push(i); }
+    }
+    for(let j=0;j<EXTRA;j++){
+      const g = band(j+911);
+      exB[g] += `<circle r="${(0.65 + rnd(j*7.1+53)*0.75).toFixed(2)}"/>`;
+      exIdx[g].push(j);
+    }
+    for(let g=0; g<TWN; g++){
+      far  += open(g) + farB[g]  + '</g>';
+      near += open(g) + nearB[g] + '</g>';
+      ex   += open(g) + exB[g]   + '</g>';
+    }
+    svgRib.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svgDots.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svgRib.innerHTML =
+        `<g id="skyRibWrap" opacity="0"><g class="ribbon">`
+      + `<path class="r1"/><path class="r2"/><path class="r3"/></g></g>`;
+    svgDots.innerHTML =
+        `<g class="d-far" data-par="6">${far}</g>`
+      + `<g class="d-near" data-par="15">${near}</g>`
+      + `<g id="skyExtraWrap" data-par="10" opacity="0"><g class="d-extra">${ex}</g></g>`;
+    // circles now sit inside band groups, so map them back by band order
+    const f = [...svgDots.querySelectorAll('.d-far circle')];
+    const n = [...svgDots.querySelectorAll('.d-near circle')];
+    const e = [...svgDots.querySelectorAll('.d-extra circle')];
+    baseEls = new Array(BASE); extraEls = new Array(EXTRA);
+    let fi = 0, ni = 0, ei = 0;
+    for(let g=0; g<farIdx.length; g++){
+      for(const i of farIdx[g])  baseEls[i]  = f[fi++];
+      for(const i of nearIdx[g]) baseEls[i]  = n[ni++];
+      for(const j of exIdx[g])   extraEls[j] = e[ei++];
+    }
+    ribEls   = [svgRib.querySelector('.ribbon .r1'),
+                svgRib.querySelector('.ribbon .r2'),
+                svgRib.querySelector('.ribbon .r3')];
+    wrap     = svgDots.querySelector('#skyExtraWrap');
+    ribWrap  = svgRib.querySelector('#skyRibWrap');
+    groups   = [...svgDots.querySelectorAll('[data-par]')].map(g=>({g,p:+g.dataset.par,x:0,y:0}));
+    twBands  = PER_S.map((per,g)=>({
+      els: [...svgDots.querySelectorAll(`.tw[data-tw="${g}"]`)],
+      per, off: OFF_S[g], last: -1
+    }));
+  }
+  build();
+
+  const STEPS = [
+    {a:'scatter',  ms:5200},
+    {a:'gather',   ms:3600},
+    {a:'formed',   ms:2800},
+    {a:'disperse', ms:3600}
+  ];
+  const ease = x => x<.5 ? 4*x*x*x : 1-Math.pow(-2*x+2,3)/2;
+  let step = 0, t0 = performance.now(), ribDrawnFor = -1, tick = 0;
+
+  const put = (els, pts) => {
+    for(let i=0;i<els.length;i++){
+      const e = els[i], p = pts[i]; if(!e || !p) continue;
+      const x = Math.round(p[0]*W*2)/2, y = Math.round(p[1]*H*2)/2;
+      if(e._x !== x){ e.setAttribute('cx', x); e._x = x; }
+      if(e._y !== y){ e.setAttribute('cy', y); e._y = y; }
+    }
+  };
+  const mix = (A,B,k) => { const o=new Array(A.length);
+    for(let i=0;i<A.length;i++) o[i]=[A[i][0]+(B[i][0]-A[i][0])*k, A[i][1]+(B[i][1]-A[i][1])*k];
+    return o; };
+
+  // The sweep is drawn as dots, sorted into three sizes so the ends of each
+  // line taper away. Positions are computed once per family — the animation
+  // only fades the group, so this costs nothing per frame.
+  function drawRibbon(){
+    if(ribDrawnFor === fam) return;
+    const f = FAM[fam], d = ['','',''];
+    for(let i=0;i<RIB;i++){
+      const r = RIB === 1 ? 0 : i/(RIB-1);
+      // stagger alternate lines by half a step, or every line samples the
+      // same positions and the sweep reads as a rigid grid
+      const off = (i % 2) * .5;
+      for(let j=0;j<RPT;j++){
+        const t = Math.min(1, (j + off)/(RPT-1)), p = f(r, t);
+        const taper = Math.sin(Math.PI * t);              // small at the ends
+        const band = taper < .42 ? 0 : (taper < .78 ? 1 : 2);
+        d[band] += `M${(p[0]*W).toFixed(1)} ${(p[1]*H).toFixed(1)}l.01 0`;
+      }
+    }
+    for(let k=0;k<3;k++) ribEls[k].setAttribute('d', d[k]);
+    ribDrawnFor = fam;
+  }
+
+  function render(phase, k){
+    if(phase === 'scatter'){
+      put(baseEls, from);
+      wrap.setAttribute('opacity','0'); ribWrap.setAttribute('opacity','0');
+      return;
+    }
+    drawRibbon();
+    if(phase === 'formed'){
+      put(baseEls, cur); put(extraEls, curE);
+      wrap.setAttribute('opacity','1'); ribWrap.setAttribute('opacity','1');
+      return;
+    }
+    if(phase === 'gather'){
+      put(baseEls, mix(from, cur, k));
+      put(extraEls, mix(parentOf(from), curE, k));
+      wrap.setAttribute('opacity', k.toFixed(3));
+      ribWrap.setAttribute('opacity', (k*k).toFixed(3));   // the sweep arrives late
+      return;
+    }
+    put(baseEls, mix(cur, to, k));
+    put(extraEls, mix(curE, parentOf(to), k));
+    wrap.setAttribute('opacity', (1-k).toFixed(3));
+    ribWrap.setAttribute('opacity', ((1-k)*(1-k)).toFixed(3));
+  }
+  render('scatter', 0);
+
+  let mx=0,my=0,tmx=0,tmy=0;
+  window.addEventListener('pointermove', e=>{
+    tmx = (e.clientX/Math.max(1,innerWidth) - .5)*2;
+    tmy = (e.clientY/Math.max(1,innerHeight) - .5)*2;
+  }, {passive:true});
+  window.addEventListener('resize', ()=>{ build(); ribDrawnFor = -1; render('scatter', 0); });
+
+  if(reduce) return;
+
+  (function frame(now){
+    mx += (tmx-mx)*.03; my += (tmy-my)*.03;
+    for(const L of groups){
+      if(L.g.getAttribute('opacity') === '0') continue;   // nothing to move
+      L.x += ((-mx*L.p)-L.x)*.03;
+      L.y += ((-my*L.p*.5)-L.y)*.03;
+      const tf = `translate(${L.x.toFixed(1)},${L.y.toFixed(1)})`;
+      if(L._tf !== tf){ L.g.setAttribute('transform', tf); L._tf = tf; }
+    }
+    // Twinkle: six sine clocks. Periods are 5-12s, so this is evaluated every
+    // third frame and quantised, which cuts the repaints without any visible
+    // stepping — updating it every frame cost roughly half the frame rate.
+    if((tick++ % 3) === 0){
+      for(const t of twBands){
+        const v = .6 + .4 * (.5 + .5*Math.sin((now/1000 + t.off) * (Math.PI*2 / t.per)));
+        const q = Math.round(v*25)/25;
+        if(q !== t.last){ t.last = q; for(const e of t.els) e.setAttribute('opacity', q); }
+      }
+    }
+
+    const s = STEPS[step], el = now - t0;
+    render(s.a, ease(Math.min(1, el/s.ms)));
+    if(el >= s.ms){
+      if(s.a === 'disperse'){
+        from = to; to = scatter(seed += 97);
+        fam = (fam + 1) % FAM.length;
+        cur = curveBase(fam); curE = curveExtra(fam);
+      }
+      step = (step + 1) % STEPS.length;
+      t0 = now;
+    }
+    requestAnimationFrame(frame);
+  })(performance.now());
+})();
+
+/* ---------- opening sequence ---------- */
+(function intro(){
+  const el = document.getElementById('intro');
+  if(!el) return;
+  let seen = false;
+  try{ seen = sessionStorage.getItem('sks-intro') === '1'; }catch(e){}
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if(seen){ el.remove(); return; }
+  try{ sessionStorage.setItem('sks-intro','1'); }catch(e){}
+
+  document.body.classList.add('intro-lock');
+
+  // each node flies out along its own heading from the centre of the mark
+  el.querySelectorAll('.nd').forEach(n=>{
+    const cx = +n.getAttribute('cx'), cy = +n.getAttribute('cy');
+    let dx = cx - 100, dy = cy - 110;
+    const d = Math.hypot(dx, dy) || 1;
+    const reach = 120 + Math.random() * 90;
+    n.style.setProperty('--dx', (dx / d * reach).toFixed(1) + 'px');
+    n.style.setProperty('--dy', (dy / d * reach).toFixed(1) + 'px');
+  });
+
+  let finished = false;
+  function finish(){
+    if(finished) return;
+    finished = true;
+    el.classList.add('done');
+    document.body.classList.remove('intro-lock');
+    setTimeout(()=>el.remove(), 600);
+  }
+  const t = setTimeout(finish, reduce ? 700 : 2180);   // overlaps the scatter, so there is no empty beat
+  const skip = () => { clearTimeout(t); finish(); };
+  el.addEventListener('click', skip);
+  window.addEventListener('keydown', skip, {once:true});
+  window.addEventListener('wheel', skip, {once:true, passive:true});
+  window.addEventListener('touchstart', skip, {once:true, passive:true});
+})();
+
+/* ============================================================
+   THEME
+   ============================================================ */
+const root = document.documentElement;
+const lightBtn = document.getElementById('lightBtn');
+const darkBtn  = document.getElementById('darkBtn');
+const themeMeta = document.getElementById('themeColor');
+
+function setTheme(mode,persist){
+  root.setAttribute('data-theme',mode);
+  lightBtn.setAttribute('aria-pressed', mode==='light');
+  darkBtn.setAttribute('aria-pressed', mode==='dark');
+  themeMeta.setAttribute('content', mode==='dark' ? '#0c0c0c' : '#ffffff');
+  if(persist){ try{ localStorage.setItem('sks-theme',mode); }catch(e){} }
+}
+(function initTheme(){
+  let saved=null;
+  try{ saved = localStorage.getItem('sks-theme'); }catch(e){}
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  setTheme(saved || (prefersDark ? 'dark' : 'light'), false);
+})();
+lightBtn.addEventListener('click',()=>setTheme('light',true));
+darkBtn.addEventListener('click',()=>setTheme('dark',true));
+
+/* ============================================================
+   CONTENT — real portfolio material.
+   Swap `files` strings for real image paths when ready.
+
+   TO ADD A PROJECT: copy the block below into PROJECTS, fill every
+   field, and add a glyph to GLYPHS. Nothing else needs touching —
+   the card field, filters and counts all read from this array.
+
+   {
+     slug:'re-emerging-thai-social-space',      // url, lowercase-hyphens
+     title:'Re-emerging Thai Social Space',
+     place:'—',                                  // city — country
+     cat:'',           // built | computational | adaptive | residential | research
+     glyph:'',         // key from GLYPHS
+     facts:[['Type',''],['Typology',''],['Structure',''],['Year',''],['Status','']],
+     lead:'',          // one sentence, the idea
+     body:['',''],     // 2–3 paragraphs
+     seq:[['Step name','Caption'], ...],         // the diagram sequence
+     credits:[['Advisors',['']],['Focus',['']],['Programme',['']],['Tools',['']]],
+     files:['image-1.jpg','image-2.jpg', ...]    // 4–6, hero first
+   }
+   ============================================================ */
+const GLYPHS = {
+  pavilion:'<svg viewBox="0 0 52 52" fill="none" stroke-width="1.1"><path d="M4 34c8-16 14-22 22-22s14 6 22 22"/><path d="M10 34c6-12 10-16 16-16s10 4 16 16"/><path d="M16 34c4-8 7-11 10-11s6 3 10 11"/><path d="M26 34v14"/><path d="M20 48h12"/></svg>',
+  payan:'<svg viewBox="0 0 52 52" fill="none" stroke-width="1.1"><path d="M6 46V26c0-8 9-14 20-14s20 6 20 14v20"/><path d="M14 46V28c0-5 5-9 12-9s12 4 12 9v18"/><path d="M22 46V32c0-3 2-5 4-5s4 2 4 5v14"/><path d="M2 46h48"/></svg>',
+  citylab:'<svg viewBox="0 0 52 52" fill="none" stroke-width="1.1"><rect x="5" y="12" width="18" height="32"/><rect x="29" y="20" width="18" height="24"/><path d="M23 26h6M23 34h6"/></svg>',
+  bungalow:'<svg viewBox="0 0 52 52" fill="none" stroke-width="1.1"><path d="M4 26 26 10l22 16"/><path d="M11 26v12M41 26v12"/><path d="M11 38h30"/><path d="M15 38v10M23 38v10M31 38v10M39 38v10"/></svg>',
+  computational:'<svg viewBox="0 0 52 52" fill="none" stroke-width="1.1"><path d="M6 16h16v7H6zM26 16h20v7H26"/><path d="M12 27h20v7H12zM36 27h10v7H36"/><path d="M6 38h16v7H6zM26 38h20v7H26"/></svg>',
+  tower:'<svg viewBox="0 0 52 52" fill="none" stroke-width="1.1"><path d="M18 48V14l10-6 10 6v34"/><path d="M18 22h20M18 30h20M18 38h20"/><path d="M12 48h34"/></svg>',
+  light:'<svg viewBox="0 0 52 52" fill="none" stroke-width="1.1"><path d="M26 6v8"/><path d="M14 20h24l-6 10H20z"/><path d="M20 36c2 4 10 4 12 0"/><path d="M8 44h36"/></svg>'
+};
+
+const PROJECTS = [
+  {
+    slug:'augmented-craft-pavilion', title:'Augmented Craft Pavilion',
+    place:'Charoenkrung, Bangkok — Thailand', cat:'built', glyph:'pavilion',
+    facts:[['Collaboration','Studio Igor Pantic + SoA+D fablab'],['Typology','Built installation'],['Scale','160 curved rattan members'],['Year','2025 — 2026'],['Status','Built · Best of Bangkok Design Week']],
+    lead:'A steam-bent rattan pavilion assembled under mixed-reality guidance, where a HoloLens replaces the drawing set and the craftsman keeps the tools.',
+    body:[
+      'Augmented Craft pairs a traditional rattan bending workshop with holographic setting-out. Fabricators wear head-mounted displays to read curve guides and connection markers directly onto the bending station and the assembly floor, checking geometry against the Rhino model as the piece is formed rather than after it.',
+      'The method lets a furniture-scale technique carry architectural spans. Steam-bent members reach across four roof modules without abandoning the hand skills that shape them — precision arrives through the digital guide, not through mechanisation.',
+      'On the construction team my work covered preparation of the digital files, projection of curve guides onto floor and boards through the HoloLens, and assembly of the bent elements against the 3D model. The build ran to a tight exhibition deadline with continuous technical adjustment on site.'
+    ],
+    seq:[
+      ['Burning rattan','Heat preparation ahead of bending. An electrical steam machine needed fifteen minutes per pole against a run of more than two hundred, so the team returned to a traditional steam chamber.'],
+      ['Bending rattan','Softened poles move to a manual bending station where craftspeople force and sculpt the thick members into uniform curves before the wood cools and sets permanently.'],
+      ['Mixed-reality outline','The Rhino file is delivered to Fologram through the Rhino plug-in. Running the model on the device draws the required part outline directly onto the bending station.'],
+      ['Court assembly','Pre-bent components are laid across an open courtyard. Marked plywood templates act as the structural guide as pieces are aligned, interconnected and secured into the final installation.']
+    ],
+    credits:[
+      ['Collaboration',['Studio Igor Pantic Ltd','SoA+D fablab, KMUTT']],
+      ['My role',['Digital file preparation','Mixed-reality setting-out','On-site assembly']],
+      ['Exhibited',['Bangkok Design Week 2026','Thailand Creative &amp; Design Center']],
+      ['Recognition',['Best of Bangkok Design Week 2026']]
+    ],
+    files:['pavilion-hero.jpg','pavilion-assembly.jpg','pavilion-modules.jpg','pavilion-roof-system.jpg','pavilion-detail.jpg','pavilion-opening.jpg']
+  },
+  {
+    slug:'next-of-payan', title:'Next of Payan',
+    place:'Bagan — Myanmar', cat:'computational', glyph:'payan',
+    facts:[['Type','Visitor centre — thesis'],['Typology','Cultural heritage'],['Structure','Robotic brick vault'],['Year','2024 — 2025'],['Status','Design thesis']],
+    lead:'A parametric brick vault for Bagan that keeps the ritual of laying brick and hands the geometry to the machine.',
+    body:[
+      'Bagan\u2019s ninth to thirteenth century stupas are eroding under the feet of visitors climbing them for the view, while UNESCO boundary rules rightly restrict heavy modern construction. The project answers with elevation rather than mass: nine-metre viewing platforms give the panorama back without a single step on the ruins.',
+      'Payan — the word for the brick mason\u2019s craft — becomes the foundation of a new typology. Robotic construction, digital tools and community learning converge on a single uniform brick module, so the labour of building remains legible even as the assembly changes hands.',
+      'The programme separates a public unpaid zone from an educational paid zone to regulate crowds, with a central plaza that turns over to puppet theatre and traditional markets after dark.'
+    ],
+    seq:[
+      ['Site footprint','A localised curved footprint is subdivided and laid with diagonal reference lines to construct a rigid lattice framework across the site.'],
+      ['Variable extrusion','The grid extrudes at varying heights, generating a three-dimensional form that resolves into a field of overlapping pointed arches.'],
+      ['Wireframe optimisation','Stripping unnecessary structural members and running wireframe optimisation refines the frame into a system buildable from uniform brick modules.'],
+      ['Column module','Half a classic Bagan arch is mirrored into a single modular column, then repeated to form a continuous load-bearing vault grid without secondary beams.']
+    ],
+    credits:[
+      ['Advisors',['Arjan Waraluk Pansuwan','Arjan Dr. Kanjanee Budthimedhee','Mr. Elliott Robert Voth','Mr. Igor Pantic']],
+      ['Focus',['Cultural heritage preservation','Robotic masonry','Parametric structure']],
+      ['Programme',['Exhibition walkway','Cultural event plaza','Sunrise &amp; sunset platforms','Café and VR room']],
+      ['Tools',['Rhino + Grasshopper','Revit','D5 Render']]
+    ],
+    files:['payan-sunset-platform.jpg','payan-vault-axo.jpg','payan-section.jpg','payan-plaza-night.jpg','payan-facade-detail.jpg','payan-robotic-column.jpg']
+  },
+  {
+    slug:'community-city-lab', title:'Community City Lab',
+    place:'Phra Nakhon, Bangkok — Thailand', cat:'adaptive', glyph:'citylab',
+    facts:[['Type','Adaptive reuse'],['Typology','Research &amp; training hub'],['Facade','Kinetic salvaged brick'],['Year','2023 — 2024'],['Status','Design study']],
+    lead:'An adaptive reuse hub that carves a courtyard out of a boxed-in block and rebuilds its skin from the bricks it already owned.',
+    body:[
+      'The existing building sits hemmed in by neighbours beside FREC Bangkok and Bangkok 1899, leaving occupants with no outward view and the ground floor severed from the street. Carving a sunlit central courtyard and terracing the floorplates opens diagonal sightlines and bounces daylight deep into the plan.',
+      'A vertical gradient orders the programme: public market and café at street level, quiet learning and technology labs above. A lightwell cut directly over the statue of Chao Phraya Thammasakmontri returns the monument to view and anchors the memorial library on axis.',
+      'Heritage brick salvaged from the demolished 25 per cent is re-laid as a parametric screen. Panels thread onto vertical steel rods and rotate independently, so historic material performs as a sun-responsive facade tuned to seasonal paths.'
+    ],
+    seq:[
+      ['Existing condition','Massive neighbouring structures enclose the footprint, producing the sensation of living under a single oppressive volume with no outlook.'],
+      ['Carve and terrace','A central courtyard is cut and floorplates step back, converting the trapped section into an open vertical journey with reflected daylight.'],
+      ['Programme conversion','Administrative area falls from 30 to 9.6 per cent, reclaiming 20.4 per cent of the plate and lifting community space from 24 to 45.9 per cent.'],
+      ['Kinetic brick screen','Salvaged heritage brick is remade as rotating modular panels, adapting the historic masonry to the sun without new material.']
+    ],
+    credits:[
+      ['Advisors',['Arjan Kisnaphol Wattanawanyoo','Arjan Chunn']],
+      ['Focus',['Tectonic','Stereotomic','Preservation']],
+      ['Context',['FREC Bangkok','Bangkok 1899','Legacy printers and woodcarvers']],
+      ['Tools',['Rhino + Grasshopper','Revit','Ladybug sun studies']]
+    ],
+    files:['citylab-street.jpg','citylab-exploded-axo.jpg','citylab-courtyard.jpg','citylab-library.jpg','citylab-facade-panels.jpg','citylab-programme.jpg']
+  },
+  {
+    slug:'bungalow-house', title:'Bungalow House',
+    place:'Riverfront — Myanmar', cat:'residential', glyph:'bungalow',
+    facts:[['Type','Residence'],['Typology','Low-cost resort housing'],['Structure','Elevated stilt, timber'],['Year','2021 — 2022'],['Status','Design study']],
+    lead:'A single-storey stilt house that borrows the Myanmar gable and spends its budget on air, shade and view.',
+    body:[
+      'The plan arranges modular blocks to set the zoning of the house while shielding living spaces from harsh solar radiation, then stretches the form and cuts openings to capture and channel cross-ventilation. A south-facing portico takes the worst of the sun.',
+      'Regional elements refine the result — an elevated stilt base for flood and airflow, a traditional gable above. Inside, an exposed timber waffle-grid ceiling and a matte charcoal feature wall frame a floor-to-ceiling glazed edge that dissolves the boundary to the water.'
+    ],
+    seq:[
+      ['Addition','Primary modular blocks establish the zone layout while shielding the living spaces from direct solar gain.'],
+      ['Air flow','The form stretches and openings are cut to capture and channel natural cross-ventilation through the plan.'],
+      ['Traditional form','Regional elements are integrated: an elevated stilt base and a Myanmar-style gable roof.'],
+      ['Final design','A low-cost single-storey house balancing climate-responsive performance with traditional aesthetics.']
+    ],
+    credits:[
+      ['Focus',['Vernacular architecture','Modern hybrid interior']],
+      ['Climate',['Cross-ventilation','Solar control','Flood-elevated base']],
+      ['Materials',['Timber waffle grid','Local stone','Riverfront glazing']],
+      ['Tools',['SketchUp','Rhino','D5 Render']]
+    ],
+    files:['bungalow-riverfront.jpg','bungalow-massing.jpg','bungalow-interior.jpg','bungalow-moodboard.jpg']
+  },
+  {
+    slug:'computational-practice', title:'Computational Practice',
+    place:'Ongoing research — Bangkok', cat:'research', glyph:'computational',
+    facts:[['Type','File-to-factory research'],['Typology','Masonry system'],['Joint','Laser-cut H-profile'],['Year','2018 — ongoing'],['Status','Prototype validated']],
+    lead:'A mortarless masonry wall where the joint carries the geometry: interlocking H-profiles hold the curve so the mason does not have to.',
+    body:[
+      'A custom Rhino and Grasshopper workflow translates an undulating parametric screen wall into a discrete, self-supporting masonry system. Traditional mortar is replaced by digitally fabricated interlocking H-profile joints that embed the geometric constraint directly into the assembly piece.',
+      'Each joint regulates macro-curvature and stability at once, so the wall\u2019s form is a consequence of its parts. The full pipeline — algorithmic form-finding, automated nesting, precision laser cutting — was validated by building the prototype, proving digital tolerance can carry straight through to physical construction.'
+    ],
+    seq:[
+      ['Form-finding','A parametric undulating screen wall is generated and discretised into a finite set of brick positions.'],
+      ['Joint logic','An interlocking H-profile replaces mortar, embedding rotation and offset constraints into the connector itself.'],
+      ['Nesting and cutting','Components are automatically nested and laser cut, keeping tolerance consistent across the full set.'],
+      ['Physical prototype','The wall is stacked without adhesive, confirming that the digital tolerance holds under real assembly.']
+    ],
+    credits:[
+      ['Focus',['File-to-factory','Discrete assembly','Digital tolerance']],
+      ['Method',['Algorithmic form-finding','Automated nesting','Precision laser cutting']],
+      ['Output',['Physical prototype wall','Rhino viewport validation']],
+      ['Tools',['Rhino + Grasshopper','Python','Laser cutter']]
+    ],
+    files:['computational-prototype.jpg','computational-joint.jpg','computational-nesting.jpg','computational-rhino.jpg']
+  },
+  {
+    slug:'performance-tower', title:'Performance-Driven Tower',
+    place:'Study — Bangkok', cat:'computational', glyph:'tower',
+    facts:[['Type','Massing study'],['Typology','High-rise residential'],['Method','Four-stage evolutionary matrix'],['Year','Study'],['Status','Research']],
+    lead:'A tower whose silhouette is an argument: every facet is a solar or wind decision made in Grasshopper.',
+    body:[
+      'A parametric workflow translates environmental data straight into geometry. Across a four-stage evolutionary matrix the massing shifts from a baseline footprint into a bifurcated, faceted tower tuned for solar radiation and microclimate wind.',
+      'Carving the envelope mathematically maximises self-shading against peak thermal load while opening wind relief corridors that cool the structure. A standardised structural grid then aligns with deep-set modular facades and biophilic sky courts.'
+    ],
+    seq:[
+      ['Form 1','Baseline footprint established against site constraints and structural grid.'],
+      ['Form 2','Bifurcation opens a wind relief corridor through the mass.'],
+      ['Form 3','Facets are carved to maximise self-shading across the worst solar hours.'],
+      ['Form 4','Sky courts and deep-set modular facades resolve the optimised envelope.']
+    ],
+    credits:[
+      ['Focus',['Environmental optimisation','Evolutionary massing']],
+      ['Analysis',['Solar radiation','Microclimate wind']],
+      ['Output',['Four-stage matrix','Rendered massing study']],
+      ['Tools',['Rhino + Grasshopper','D5 Render']]
+    ],
+    files:['tower-render.jpg','tower-matrix.jpg']
+  },
+  {
+    slug:'serpentin-lighting', title:'Serpentin Residence Lobby',
+    place:'Bangkok — Thailand', cat:'built', glyph:'light',
+    facts:[['Type','Lighting design'],['Typology','Residential lobby'],['Method','DIALux photometric validation'],['Year','2024 — 2025'],['Status','Professional work — BIOARCHITEK']],
+    lead:'Technical lighting design for a parametric wave ceiling, verified in false colour before a single fixture was hung.',
+    body:[
+      'Conceptual mapping of track and pendant fixtures moved into rigorous computational analysis in DIALux. False-colour illuminance mapping verified lux distribution, optimised uniformity ratios and confirmed compliance with glare thresholds and energy targets.',
+      'Manufacturer IES and LDT data was imported for a high-fidelity radiosity visualisation, simulating beam angle and light-material interaction across reflective flooring and the parametric wave ceiling ahead of installation.'
+    ],
+    seq:[
+      ['Reference','Precedent study for the wave ceiling and lounge lighting character.'],
+      ['Concept','Track and pendant positions mapped against the ceiling geometry.'],
+      ['Analyse','False-colour illuminance mapping verifies lux distribution and uniformity.'],
+      ['Visualise','Radiosity render with manufacturer photometric data confirms the built result.']
+    ],
+    credits:[
+      ['Office',['BIOARCHITEK']],
+      ['Scope',['Technical lighting design','Photometric validation','Lighting drawings to office standard']],
+      ['Compliance',['UGR glare thresholds','Uniformity ratio','Energy efficiency']],
+      ['Tools',['DIALux','AutoCAD','Revit']]
+    ],
+    files:['serpentin-lobby.jpg','serpentin-dialux.jpg','serpentin-concept.jpg']
+  }
+];
+
+const FILTERS = [['all','All work'],['built','Built'],['computational','Computational'],['adaptive','Adaptive reuse'],['residential','Residential'],['research','Research']];
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const app = document.getElementById('app');
+let activeFilter = 'all';
+const pad = x => String(x).padStart(2,'0');
+const countFor = k => k==='all' ? PROJECTS.length : PROJECTS.filter(p=>p.cat===k).length;
+
+const IMG={
+"portrait-clean.jpg":"img/portrait-clean.jpg",
+"portrait-glitch.jpg":"img/portrait-glitch.jpg",
+"bungalow-interior.jpg":"img/bungalow-interior.jpg",
+"bungalow-massing.jpg":"img/bungalow-massing.jpg",
+"bungalow-moodboard.jpg":"img/bungalow-moodboard.jpg",
+"bungalow-riverfront.jpg":"img/bungalow-riverfront.jpg",
+"citylab-courtyard.jpg":"img/citylab-courtyard.jpg",
+"citylab-exploded-axo.jpg":"img/citylab-exploded-axo.jpg",
+"citylab-facade-panels.jpg":"img/citylab-facade-panels.jpg",
+"citylab-library.jpg":"img/citylab-library.jpg",
+"citylab-programme.jpg":"img/citylab-programme.jpg",
+"citylab-street.jpg":"img/citylab-street.jpg",
+"computational-joint.jpg":"img/computational-joint.jpg",
+"computational-nesting.jpg":"img/computational-nesting.jpg",
+"computational-prototype.jpg":"img/computational-prototype.jpg",
+"computational-rhino.jpg":"img/computational-rhino.jpg",
+"pavilion-assembly.jpg":"img/pavilion-assembly.jpg",
+"pavilion-detail.jpg":"img/pavilion-detail.jpg",
+"pavilion-hero.jpg":"img/pavilion-hero.jpg",
+"pavilion-modules.jpg":"img/pavilion-modules.jpg",
+"pavilion-opening.jpg":"img/pavilion-opening.jpg",
+"pavilion-roof-system.jpg":"img/pavilion-roof-system.jpg",
+"payan-facade-detail.jpg":"img/payan-facade-detail.jpg",
+"payan-plaza-night.jpg":"img/payan-plaza-night.jpg",
+"payan-robotic-column.jpg":"img/payan-robotic-column.jpg",
+"payan-section.jpg":"img/payan-section.jpg",
+"payan-sunset-platform.jpg":"img/payan-sunset-platform.jpg",
+"payan-vault-axo.jpg":"img/payan-vault-axo.jpg",
+"serpentin-concept.jpg":"img/serpentin-concept.jpg",
+"serpentin-dialux.jpg":"img/serpentin-dialux.jpg",
+"serpentin-lobby.jpg":"img/serpentin-lobby.jpg",
+"tower-matrix.jpg":"img/tower-matrix.jpg",
+"tower-render.jpg":"img/tower-render.jpg"
+};
+const FIT=new Set(["bungalow-massing.jpg", "bungalow-moodboard.jpg", "citylab-exploded-axo.jpg", "citylab-facade-panels.jpg", "citylab-programme.jpg", "computational-joint.jpg", "computational-nesting.jpg", "computational-prototype.jpg", "computational-rhino.jpg", "pavilion-detail.jpg", "pavilion-modules.jpg", "pavilion-roof-system.jpg", "payan-facade-detail.jpg", "payan-robotic-column.jpg", "payan-section.jpg", "payan-vault-axo.jpg", "serpentin-concept.jpg", "serpentin-dialux.jpg", "tower-matrix.jpg"]);
+
+/* fixed-ratio slot (hero, card back, diagram stage) */
+function ph(file,idx){
+  const src = IMG[file];
+  if(src){
+    const fit = FIT.has(file) ? ' fit' : '';
+    return `<img class="shotimg${fit}" src="${src}" alt="" loading="lazy">` +
+           (idx ? `<span class="idxbadge">${idx}</span>` : '');
+  }
+  return `<div class="ph" data-file="${file}">${idx?`<span class="idx">${idx}</span>`:'<span></span>'}</div>`;
+}
+/* free-height slot — project pages show the drawing uncropped */
+function phFree(file){
+  const src = IMG[file];
+  if(src) return `<img class="freeimg${FIT.has(file)?' fit':''}" src="${src}" alt="" loading="lazy">`;
+  return `<div class="phbox"><div class="ph" data-file="${file}"><span></span></div></div>`;
+}
+
+/* Seed composition. fx/fy are fractions of the field; depth is the scale —
+   1.0 sits at the front, 0.60 sits furthest back. Big and small are
+   interleaved so the near cards never clump on one side.
+   Eleven slots seeded; only as many are used as there are projects. */
+const SEEDS = [
+  {fx:.02, fy:.04, depth:1.00},
+  {fx:.34, fy:.36, depth:.68},
+  {fx:.58, fy:.02, depth:.88},
+  {fx:.82, fy:.40, depth:.60},
+  {fx:.12, fy:.56, depth:.95},
+  {fx:.44, fy:.66, depth:.74},
+  {fx:.72, fy:.60, depth:.82},
+  {fx:.24, fy:.20, depth:.65},
+  {fx:.62, fy:.28, depth:.91},
+  {fx:.05, fy:.34, depth:.71},
+  {fx:.90, fy:.08, depth:.63}
+];
+const CAT_LABEL = Object.fromEntries(FILTERS);
+
+/* ============================================================
+   NETWORK — the threads that actually run between the projects.
+   Themes are drawn from the portfolio text, not invented.
+   ============================================================ */
+const THEMES = {
+  grasshopper: 'Rhino + Grasshopper',
+  computational: 'Computational design',
+  fabrication: 'Digital fabrication',
+  craft: 'Hand craft',
+  masonry: 'Brick & masonry',
+  heritage: 'Cultural heritage',
+  robotic: 'Robotic assembly',
+  mixedreality: 'Mixed reality',
+  climate: 'Climate response',
+  reuse: 'Adaptive reuse',
+  vernacular: 'Vernacular',
+  light: 'Light & photometry'
+};
+const PROJECT_THEMES = {
+  'augmented-craft-pavilion': ['fabrication','mixedreality','craft','grasshopper'],
+  'next-of-payan':            ['computational','heritage','masonry','robotic','grasshopper'],
+  'community-city-lab':       ['reuse','heritage','masonry','climate','grasshopper'],
+  'bungalow-house':           ['vernacular','climate','craft'],
+  'computational-practice':   ['fabrication','masonry','computational','grasshopper'],
+  'performance-tower':        ['computational','climate','grasshopper'],
+  'serpentin-lighting':       ['light','computational']
+};
+
+
+function filterChips(){
+  return `<div class="chips">${FILTERS.map(([k,label])=>
+    `<button class="filter ${k===activeFilter?'on':''}" data-filter="${k}" aria-pressed="${k===activeFilter}">
+       <span>${label}</span><span class="n">${pad(countFor(k))}</span>
+     </button>`).join('')}</div>`;
+}
+
+function viewIndex(){
+  return `
+  <div class="view">
+    <section class="index-head">
+      <h1 class="hero"><span class="hb" style="--k:0">Physical craft</span><span class="hl" style="--k:1">, held to</span> <span class="hb" style="--k:2">computational tolerance.</span></h1>
+      <div class="head-row">
+        <p class="sub">Graduate architect based in Bangkok. I take complex geometry from parametric form-finding through documentation to built reality — <strong>steam-bent rattan</strong> under mixed reality, <strong>robotic brick vaults</strong>, <strong>mortarless masonry</strong> that holds its own curve.</p>
+        <div class="head-meta">
+          <span class="meta-label">Bangkok 13.7563° N 100.5018° E</span>
+          <span class="meta-label">${pad(PROJECTS.length)} projects · ${pad(Object.keys(THEMES).length)} shared threads</span>
+        </div>
+      </div>
+      ${filterChips()}
+    </section>
+    <section class="netwrap" id="net">
+      <svg class="net-edges"></svg>
+    </section>
+  </div>`;
+}
+
+function viewProject(slug){
+  const i = PROJECTS.findIndex(p=>p.slug===slug);
+  if(i<0) return viewIndex();
+  const p = PROJECTS[i];
+  const prev = PROJECTS[(i-1+PROJECTS.length)%PROJECTS.length];
+  const next = PROJECTS[(i+1)%PROJECTS.length];
+  const share = encodeURIComponent(location.href);
+  return `
+  <div class="view">
+    <div class="hero">${ph(p.files[0])}</div>
+    <div class="title-block">
+      <div class="glyph">${GLYPHS[p.glyph]}</div>
+      <div><h1 class="display">${p.title}</h1><div class="place">${p.place}</div></div>
+      <div class="share">
+        <a href="mailto:?subject=${encodeURIComponent(p.title)}&body=${share}">Mail</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=${share}" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+    <dl class="facts">
+      ${p.facts.map(([k,v])=>`<div class="fact"><dt class="meta-label">${k}</dt><dd>${v}</dd></div>`).join('')}
+    </dl>
+    <div class="stack">
+      <div class="prose">
+        <p class="meta-label">Project brief</p>
+        <p class="lead">${p.lead}</p>
+        <div class="body-copy">${p.body.map(t=>`<p>${t}</p>`).join('')}</div>
+      </div>
+      <figure class="shot-free">${phFree(p.files[1]||p.files[0])}</figure>
+      <section class="seq" data-seq>
+        <div class="seq-top">
+          <span class="meta-label" data-seq-count>01 / ${pad(p.seq.length)}</span>
+          <div class="seq-nav"><button data-seq-prev>Prev</button><button data-seq-next>Next</button></div>
+        </div>
+        <div class="seq-stage">
+          ${p.seq.map((s,n)=>`<div class="seq-slide ${n===0?'on':''}">${ph(p.files[n%p.files.length], pad(n+1))}</div>`).join('')}
+        </div>
+        <div class="seq-cap" data-seq-cap><b>${p.seq[0][0]}</b> — ${p.seq[0][1]}</div>
+        <script type="application/json" data-seq-data>${JSON.stringify(p.seq)}<\/script>
+      </section>
+      <div class="duo">
+        <figure class="shot-free">${phFree(p.files[2]||p.files[0])}</figure>
+        <figure class="shot-free">${phFree(p.files[3]||p.files[1]||p.files[0])}</figure>
+      </div>
+      ${p.files[4]?`<figure class="shot-free">${phFree(p.files[4])}</figure>`:''}
+      ${p.files[5]?`<figure class="shot-free">${phFree(p.files[5])}</figure>`:''}
+    </div>
+    <section class="credits">
+      ${p.credits.map(([h,items])=>`<div><h3>${h}</h3><ul>${items.map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('')}
+    </section>
+    <div class="pager">
+      <button data-link-to="#/project/${prev.slug}">← ${prev.title}</button>
+      <button data-link-to="#/project/${next.slug}">${next.title} →</button>
+    </div>
+  </div>`;
+}
+
+function viewAbout(){
+  return `
+  <div class="view page">
+    <h1 class="display">Graduate architect working between the workshop and the algorithm.</h1>
+    <div class="cols">
+      <div>
+        <figure class="portrait">
+          <img src="${IMG['portrait-clean.jpg']}" alt="Sai Kaung Si Thu">
+          <span class="gl g1"><img src="${IMG['portrait-glitch.jpg']}" alt=""></span>
+          <span class="gl g2"><img src="${IMG['portrait-glitch.jpg']}" alt=""></span>
+          <span class="gl g3"><img src="${IMG['portrait-glitch.jpg']}" alt=""></span>
+          <span class="sweep"></span>
+        </figure>
+        <p class="meta-label">Profile</p>
+        <p class="lead" style="margin-top:14px">I work on cultural, adaptive reuse and residential projects, taking complex geometry from parametric form-finding through documentation to built, on-site reality. The thread across everything here is the same: computation earns its place when it lets a craftsman do something they could not do by hand alone.</p>
+      </div>
+      <div>
+        <div class="block">
+          <p class="meta-label">Education</p>
+          <div class="rows" style="margin-top:14px">
+            <div class="row"><span class="y">2022—2025</span><div><strong>School of Architecture &amp; Design, KMUTT</strong><p>B.Arch, transfer student. Bangkok, Thailand.</p></div></div>
+            <div class="row"><span class="y">2015—2020</span><div><strong>Technological University (HB)</strong><p>Bachelor of Architecture and Design.</p></div></div>
+          </div>
+        </div>
+        <div class="block">
+          <p class="meta-label">Experience</p>
+          <div class="rows" style="margin-top:14px">
+            <div class="row"><span class="y">2024—2025</span><div><strong>Intern Architect — BIOARCHITEK</strong><p>Project documentation and technical drawings, client presentation graphics, 3D rendering and visualisation, lighting drawings to office standard.</p></div></div>
+            <div class="row"><span class="y">2023</span><div><strong>UIA Workshop — Sustainable Futures</strong><p>Leave No One Behind. Conceptual design thinking, sustainable problem-solving, modelling and graphic presentation.</p></div></div>
+            <div class="row"><span class="y">Ongoing</span><div><strong>Assistant Lecturer — Weekend University</strong><p>Volunteer. Perspective and freehand drawing, design critique, computational tools.</p></div></div>
+          </div>
+        </div>
+        <div class="block">
+          <p class="meta-label">Recognition</p>
+          <div class="rows" style="margin-top:14px">
+            <div class="row"><span class="y">2026</span><div><strong>Best of Bangkok Design Week 2026</strong><p>Augmented Craft Pavilion at TCDC.</p></div></div>
+            <div class="row"><span class="y">2020 · 2021</span><div><strong>Excellence Award — Virtual Design World Cup</strong><p>FORUM8. Futuristic Evergreen and Greenhorns.</p></div></div>
+            <div class="row"><span class="y">2019</span><div><strong>Nomination Award — Virtual Design World Cup</strong><p>FORUM8. Future AquaCity Osaka.</p></div></div>
+          </div>
+        </div>
+        <div class="block">
+          <p class="meta-label">Technical coursework</p>
+          <div class="rows" style="margin-top:14px">
+            <div class="row"><span class="y">ENV</span><div><strong>Environmental Technology I &amp; II</strong><p>Daylight, thermal and ventilation analysis — the basis for the sun-path facade studies in Community City Lab.</p></div></div>
+            <div class="row"><span class="y">STR</span><div><strong>Structure I</strong><p>Structural systems and final project. Underpins the vault and self-supporting masonry work.</p></div></div>
+            <div class="row"><span class="y">BMC</span><div><strong>Building Materials &amp; Construction I &amp; II</strong><p>Assembly logic and detailing, carried into the joint design in Computational Practice.</p></div></div>
+            <div class="row"><span class="y">SITE</span><div><strong>Site Planning</strong><p>Site analysis and planning method, applied to the Phra Nakhon context study.</p></div></div>
+          </div>
+        </div>
+        <div class="block">
+          <p class="meta-label">Software &amp; languages</p>
+          <div class="skills">
+            <div>
+              <p><strong>Computational</strong><br><span>Rhino + Grasshopper · Python · Fologram</span></p>
+              <p><strong>Design / BIM</strong><br><span>Revit · AutoCAD · SketchUp</span></p>
+              <p><strong>Visualisation</strong><br><span>D5 · Lumion · Enscape · DIALux</span></p>
+            </div>
+            <div>
+              <p><strong>Graphic</strong><br><span>InDesign · Illustrator · Photoshop</span></p>
+              <p><strong>Languages</strong><br><span>Burmese — native<br>English — professional<br>Thai — beginner</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function viewServices(){
+  return `
+  <div class="view page">
+    <h1 class="display">What I can take on, and what you get back.</h1>
+    <div class="cols">
+      <div>
+        <p class="meta-label">Working with practices, studios and fabricators</p>
+        <p class="lead" style="margin-top:14px">Four things I do, each of them tested on a real build rather than a course. Available for full-time positions, contract work and remote collaboration — from a single Grasshopper definition through to a coordinated drawing set.</p>
+      </div>
+      <div class="rows">
+        <div class="row"><span class="y">01</span><div>
+          <strong>Computational design &amp; parametric modelling</strong>
+          <p>Rhino and Grasshopper workflows for facade systems, structural grids and form-finding. Definitions are built to stay editable when the brief moves, not baked into a single output.</p>
+          <p class="deliver">Grasshopper definition · Rhino model · geometry documentation</p>
+        </div></div>
+        <div class="row"><span class="y">02</span><div>
+          <strong>Digital fabrication &amp; file-to-factory</strong>
+          <p>Turning a model into parts that can be cut and assembled: component nesting, interlocking joint design, laser-cut and robotic toolpaths, and mixed-reality setting-out for on-site assembly.</p>
+          <p class="deliver">Cut files · assembly sequence · fabrication drawings · Fologram setup</p>
+        </div></div>
+        <div class="row"><span class="y">03</span><div>
+          <strong>Visualisation &amp; lighting simulation</strong>
+          <p>Stills and walkthroughs in D5, Lumion and Enscape, plus photometric verification in DIALux when the lighting has to be proven rather than described.</p>
+          <p class="deliver">Renders · animation · false-colour illuminance study</p>
+        </div></div>
+        <div class="row"><span class="y">04</span><div>
+          <strong>Documentation &amp; BIM</strong>
+          <p>Revit and AutoCAD drawing sets to office standard — plans, sections, details and lighting drawings prepared for coordination and construction.</p>
+          <p class="deliver">Drawing set · Revit model · sheet setup</p>
+        </div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function viewContact(){
+  return `
+  <div class="view page">
+    <h1 class="display">Open to positions with practices building at the edge of fabrication.</h1>
+    <div class="cols">
+      <div>
+        <p class="meta-label">Direct</p>
+        <p class="lead" style="margin-top:14px">
+          <a href="mailto:work.bysaikaung@gmail.com" class="linkline">work.bysaikaung@gmail.com</a><br>
+          <a href="tel:+66930516020" class="linkline">+66 93 051 6020</a><br>
+          <a href="https://www.linkedin.com/in/saikaungsithu" target="_blank" rel="noopener" class="linkline">linkedin.com/in/saikaungsithu</a>
+        </p>
+        <p class="meta-label" style="margin-top:32px">Location</p>
+        <p style="color:var(--ink-mid);margin-top:8px">Bangkok, Thailand<br>LINE 65120500045<br>Available in Southeast Asia, Europe and remote.</p>
+      </div>
+      <div class="rows">
+        <div class="row"><span class="y">PDF</span><div><strong>Portfolio — 2026 edition</strong><p>21 pages. Five projects plus research studies. Link your hosted file here.</p></div></div>
+        <div class="row"><span class="y">PDF</span><div><strong>Curriculum vitae — 2026 edition</strong><p>Two sheets. Link your hosted file here.</p></div></div>
+        <div class="row"><span class="y">3D</span><div><strong>Interactive vault model</strong><p>Next of Payan arch assembly, Three.js. Drop the GLB route in when the Rhino export is ready.</p></div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- sequence ---------- */
+function bindSeq(rootEl){
+  rootEl.querySelectorAll('[data-seq]').forEach(sec=>{
+    const data = JSON.parse(sec.querySelector('[data-seq-data]').textContent);
+    const slides = [...sec.querySelectorAll('.seq-slide')];
+    const cap = sec.querySelector('[data-seq-cap]');
+    const count = sec.querySelector('[data-seq-count]');
+    let n = 0;
+    function go(to){
+      n = (to + data.length) % data.length;
+      slides.forEach((s,i)=>s.classList.toggle('on', i===n));
+      cap.innerHTML = `<b>${data[n][0]}</b> — ${data[n][1]}`;
+      count.textContent = `${pad(n+1)} / ${pad(data.length)}`;
+    }
+    sec.querySelector('[data-seq-prev]').addEventListener('click',()=>go(n-1));
+    sec.querySelector('[data-seq-next]').addEventListener('click',()=>go(n+1));
+  });
+}
+
+/* ---------- force-directed network ---------- */
+let resetLayout = null;
+let netStop = null;
+
+function initNetwork(){
+  if(netStop){ netStop(); netStop = null; }
+  const wrap = document.getElementById('net');
+  if(!wrap) return;
+  const svg = wrap.querySelector('.net-edges');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = wrap.clientWidth, H = wrap.clientHeight;
+
+  // build nodes: one per project, one per shared theme
+  const nodes = [];
+  PROJECTS.forEach((p,i)=>{
+    const a = (i / PROJECTS.length) * Math.PI * 2;
+    nodes.push({
+      id:p.slug, type:'proj', label:p.title, slug:p.slug, file:p.files[0], i,
+      year:(p.facts.find(f=>f[0]==='Year')||[])[1] || '',
+      cat:p.cat,
+      x: W/2 + Math.cos(a) * W*0.32, y: H/2 + Math.sin(a) * H*0.33,
+      vx:0, vy:0, r:98
+    });
+  });
+  Object.keys(THEMES).forEach((k,i)=>{
+    const a = (i / Object.keys(THEMES).length) * Math.PI * 2 + .4;
+    nodes.push({
+      id:k, type:'theme', label:THEMES[k],
+      x: W/2 + Math.cos(a) * W*0.12, y: H/2 + Math.sin(a) * H*0.13,
+      vx:0, vy:0, r:26
+    });
+  });
+  // per-node wander: amplitude, period and phase all differ, so the field
+  // never falls into step. This is what keeps the graph floating once it settles.
+  const rnd = k => { const s = Math.sin(k * 91.7) * 43758.5453; return s - Math.floor(s); };
+  nodes.forEach((n,i)=>{
+    const big = n.type === 'proj';
+    const room = Math.min(1, Math.max(.5, (wrap.clientWidth || 1200) / 1460));
+    n.ax = ((big ? 16 : 11) + rnd(i * 3.1) * (big ? 14 : 9)) * room;   // px of travel
+    n.ay = ((big ? 13 : 9)  + rnd(i * 5.7) * (big ? 12 : 8)) * room;
+    n.fx = 0.00016 + rnd(i * 7.3) * 0.00013;                  // ~40–110s per cycle
+    n.fy = 0.00013 + rnd(i * 9.1) * 0.00011;
+    n.px = rnd(i * 2.9) * 6.283;
+    n.py = rnd(i * 4.7) * 6.283;
+    n.ox = 0; n.oy = 0;
+  });
+  const byId = Object.fromEntries(nodes.map(n=>[n.id,n]));
+
+  const links = [];
+  Object.entries(PROJECT_THEMES).forEach(([slug,themes])=>{
+    themes.forEach(t=>{ if(byId[slug] && byId[t]) links.push({a:byId[slug], b:byId[t]}); });
+  });
+
+  // adjacency, so hovering can dim everything unrelated
+  const near = {};
+  nodes.forEach(n=> near[n.id] = new Set([n.id]));
+  links.forEach(l=>{ near[l.a.id].add(l.b.id); near[l.b.id].add(l.a.id); });
+
+  // paint
+  svg.innerHTML = links.map(()=>'<line/>').join('');
+  const lineEls = [...svg.querySelectorAll('line')];
+  nodes.forEach(n=>{
+    const el = document.createElement(n.type === 'proj' ? 'a' : 'button');
+    el.className = 'node ' + (n.type === 'proj' ? 'n-proj' : 'n-theme');
+    el.dataset.id = n.id;
+    if(n.type === 'proj'){
+      el.href = '#/project/' + n.slug;
+      el.setAttribute('data-link','');
+      el.style.setProperty('--i', n.i);
+      el.innerHTML = `<span class="frame">${ph(n.file)}</span>`
+                   + `<span class="c-name">${n.label}</span>`
+                   + `<span class="c-year">${n.year}</span>`;
+    } else {
+      el.innerHTML = `<span class="dot"></span><span class="cap">${n.label}</span>`;
+    }
+    wrap.appendChild(el);
+    n.el = el;
+  });
+
+  // Where the node's coordinate actually lands on the element:
+  //  - a project card is centred on it
+  //  - a theme's DOT is centred on it, so the edges meet the circle itself;
+  //    its label then hangs below, which makes the footprint asymmetric.
+  nodes.forEach(n=>{
+    const cap = n.el.querySelector('.cap');
+    const dot = n.el.querySelector('.dot');
+    // anchorX/anchorY, not ox/oy — the drift owns those names.
+    // For a theme the anchor is the dot's real centre, measured rather than
+    // assumed: `margin:0 auto` cannot centre a 9px dot in a 2px parent.
+    if(n.type === 'proj'){
+      n.anchorX = n.el.offsetWidth / 2;
+      n.anchorY = n.el.offsetHeight / 2;
+      n.hw = n.anchorX;
+      n.up = n.anchorY; n.dn = n.anchorY;
+    } else {
+      const eb = n.el.getBoundingClientRect();
+      const db = dot ? dot.getBoundingClientRect() : eb;
+      n.anchorX = (db.left - eb.left) + db.width / 2;
+      n.anchorY = (db.top  - eb.top)  + db.height / 2;
+      n.hw = Math.max(cap ? cap.offsetWidth / 2 : 0, db.width / 2 + 2);
+      n.up = n.anchorY;
+      n.dn = Math.max(n.el.offsetHeight - n.anchorY, db.height / 2);
+    }
+    n.hh = (n.up + n.dn) / 2;
+  });
+
+  // ---- interaction ----
+  let held = null, grabX = 0, grabY = 0, moved = 0, pinned = null;
+
+  // the wordmark in the header is the reset control
+  resetLayout = () => {
+    nodes.forEach(n=>{ n.fixed = false; n.relX = n.relY = undefined; n.el.classList.remove('pinned'); });
+    fitted = false; alpha = Math.max(alpha, .5);
+    wake(true);
+  };
+
+  function applyFilter(){
+    nodes.forEach(n=>{
+      n.el.classList.toggle('dim',
+        n.type === 'proj' && activeFilter !== 'all' && n.cat !== activeFilter);
+    });
+  }
+  applyFilter();
+
+  function highlight(id){
+    const set = id ? near[id] : null;
+    nodes.forEach(n=> n.el.classList.toggle('cold', !!set && !set.has(n.id)));
+    lineEls.forEach((el,i)=>{
+      const l = links[i];
+      const hot = set && (set.has(l.a.id) && set.has(l.b.id)) && (l.a.id === id || l.b.id === id);
+      el.classList.toggle('hot', !!hot);
+      el.classList.toggle('cold', !!set && !hot);
+    });
+  }
+
+  nodes.forEach(n=>{
+    const el = n.el;
+    el.addEventListener('pointerenter', ()=>{ if(!held && !pinned) highlight(n.id); });
+    el.addEventListener('pointerleave', ()=>{ if(!held && !pinned) highlight(null); });
+    el.addEventListener('pointerdown', e=>{
+      if(e.button !== 0) return;
+      e.preventDefault();
+      held = n; moved = 0;
+      const r = wrap.getBoundingClientRect();
+      grabX = (e.clientX - r.left) - n.x;
+      grabY = (e.clientY - r.top)  - n.y;
+      el.setPointerCapture(e.pointerId);
+      el.classList.add('grabbing');
+      wake(true);
+    });
+    el.addEventListener('pointermove', e=>{
+      if(held !== n) return;
+      const r = wrap.getBoundingClientRect();
+      const nx = (e.clientX - r.left) - grabX;
+      const ny = (e.clientY - r.top)  - grabY;
+      moved += Math.abs(nx - n.x) + Math.abs(ny - n.y);
+      n.x = nx; n.y = ny; n.vx = 0; n.vy = 0;
+      wake(true);
+    });
+    const end = e => {
+      if(held !== n) return;
+      held = null;
+      el.classList.remove('grabbing');
+      try{ el.releasePointerCapture(e.pointerId); }catch(_){}
+      if(moved >= 5){
+        n.fixed = true;                       // dropped nodes stay where you put them
+        n.tx = n.x; n.ty = n.y;               // so any later glide leaves it alone
+        n.relX = n.x / W; n.relY = n.y / H;   // survive a resize proportionally
+        el.classList.add('pinned');
+        el.dataset.drag = '1';
+        setTimeout(()=>{ delete el.dataset.drag; }, 60);
+      }
+      wake(true);
+    };
+    el.addEventListener('click', e=>{
+      if(el.dataset.drag){ e.preventDefault(); e.stopPropagation(); return; }  // it was a drag
+      if(n.type === 'theme'){                 // tap a thread to hold it open
+        e.preventDefault(); e.stopPropagation();
+        pinned = pinned === n.id ? null : n.id;
+        nodes.forEach(m=> m.el.classList.toggle('on', m.type==='theme' && m.id===pinned));
+        highlight(pinned);
+      }
+    });
+
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', end);
+  });
+
+  // once the layout has resolved, stretch it to use the whole frame — the
+  // solver settles into a cluster narrower than the canvas on its own
+  let fitted = false, gliding = false;
+  function fitToFrame(){
+    // anything the visitor placed by hand is left exactly where they put it;
+    // only the free nodes get rescaled to fill the frame
+    const free = nodes.filter(n=>!n.fixed);
+    if(!free.length){ fitted = true; return; }
+    let x0=Infinity, x1=-Infinity, y0=Infinity, y1=-Infinity;
+    for(const n of free){
+      x0 = Math.min(x0, n.x - n.hw); x1 = Math.max(x1, n.x + n.hw);
+      y0 = Math.min(y0, n.y - n.up); y1 = Math.max(y1, n.y + n.dn);
+    }
+    const bw = x1 - x0, bh = y1 - y0;
+    if(!(bw > 1 && bh > 1)) return;
+    const M = 26;                                   // room for drift
+    // scale the axes independently: only positions move, so no card distorts,
+    // and a graph has no correct aspect ratio to preserve
+    let sx = (W - M*2) / bw, sy = (H - M*2) / bh;
+    sx = Math.min(Math.max(sx, 0.4), 3.2);
+    sy = Math.min(Math.max(sy, 0.4), 3.2);
+    if(!isFinite(sx) || !isFinite(sy)) return;
+    const bx = (x0 + x1) / 2, by = (y0 + y1) / 2;
+    for(const n of nodes){
+      if(n.fixed){ n.tx = n.x; n.ty = n.y; continue; }
+      n.tx = W/2 + (n.x - bx) * sx;
+      n.ty = H/2 + (n.y - by) * sy;
+    }
+    // stretching the axes can leave two cards touching — push those apart
+    const cards = nodes.filter(n=>n.type === 'proj' && !n.fixed);
+    for(let pass=0; pass<24; pass++){
+      let moved = false;
+      for(let i=0;i<cards.length;i++){
+        for(let j=i+1;j<cards.length;j++){
+          const a = cards[i], c = cards[j];
+          // leave room for the drift so they cannot collide later either
+          const ox = (a.hw + c.hw + 10 + (a.ax + c.ax) * .85) - Math.abs(a.tx - c.tx);
+          const oy = (a.hh + c.hh + 10 + (a.ay + c.ay) * .85) - Math.abs(a.ty - c.ty);
+          if(ox > 0 && oy > 0){                     // overlapping in both axes
+            const push = (ox < oy ? ox : oy) / 2 + .5;
+            if(ox < oy){ const s = a.tx <= c.tx ? -1 : 1; a.tx += push*s; c.tx -= push*s; }
+            else       { const s = a.ty <= c.ty ? -1 : 1; a.ty += push*s; c.ty -= push*s; }
+            moved = true;
+          }
+        }
+      }
+      if(!moved) break;
+    }
+    for(const n of nodes){
+      n.tx = Math.min(Math.max(n.tx, n.hw + 10), W - n.hw - 10);
+      n.ty = Math.min(Math.max(n.ty, n.up + 10), H - n.dn - 12);
+    }
+    fitted = true; gliding = true;                  // eased into place, not teleported
+  }
+
+  // ---- simulation ----
+  // alpha cools from 1 to 0 so the layout actually converges; dragging reheats it
+  let raf = 0, sleeping = false, alpha = 1;
+  function wake(reheat){
+    if(reheat) alpha = Math.max(alpha, 0.45);
+    if(sleeping){ sleeping = false; raf = requestAnimationFrame(step); }
+  }
+
+  function step(){
+    alpha *= 0.978;
+    const solving = alpha > 0.006 || held;
+    if(solving){
+    // repulsion
+    for(let i = 0; i < nodes.length; i++){
+      for(let j = i+1; j < nodes.length; j++){
+        const a = nodes[i], b = nodes[j];
+        let dx = b.x - a.x, dy = b.y - a.y;
+        let d2 = dx*dx + dy*dy || 0.01;
+        const min = (a.r + b.r);
+        const f = ((min * min * 3.2) / d2) * alpha;
+        const d = Math.sqrt(d2);
+        const ux = dx/d, uy = dy/d;
+        a.vx -= ux*f; a.vy -= uy*f;
+        b.vx += ux*f; b.vy += uy*f;
+      }
+    }
+    // springs
+    for(const l of links){
+      const dx = l.b.x - l.a.x, dy = l.b.y - l.a.y;
+      const d = Math.hypot(dx, dy) || 0.01;
+      const f = (d - 232) * 0.014 * alpha;
+      const ux = dx/d, uy = dy/d;
+      l.a.vx += ux*f; l.a.vy += uy*f;
+      l.b.vx -= ux*f; l.b.vy -= uy*f;
+    }
+    }
+    if(!solving && !fitted) fitToFrame();
+    // gentle centring + integrate
+    for(const n of nodes){
+      if(!solving) break;
+      n.vx += (W/2 - n.x) * 0.0014 * alpha;
+      n.vy += (H/2 - n.y) * 0.0014 * alpha;
+      if(n === held || n.fixed){ n.vx = 0; n.vy = 0; }
+      n.vx *= 0.82; n.vy *= 0.82;
+      n.x += n.vx; n.y += n.vy;
+      n.x = Math.min(Math.max(n.x, n.hw + 10), W - n.hw - 10);
+      n.y = Math.min(Math.max(n.y, n.up + 10), H - n.dn - 12);
+    }
+
+    // ease into the fitted layout rather than jumping to it
+    if(gliding){
+      let far = false;
+      for(const n of nodes){
+        if(n.fixed || n === held) continue;
+        n.x += (n.tx - n.x) * .042;
+        n.y += (n.ty - n.y) * .042;
+        if(Math.abs(n.tx - n.x) > .4 || Math.abs(n.ty - n.y) > .4) far = true;
+      }
+      if(!far) gliding = false;
+    }
+
+    // ---- the float: a slow lissajous around each node's place in the graph ----
+    const t = performance.now();
+    for(const n of nodes){
+      const still = (n === held) || n.el.matches(':hover');
+      if(!still && !reduce){
+        n.ox += ((Math.sin(t * n.fx + n.px) * n.ax) - n.ox) * 0.04;
+        n.oy += ((Math.cos(t * n.fy + n.py) * n.ay) - n.oy) * 0.04;
+      }
+      n.rx = n.x + n.ox;
+      n.ry = n.y + n.oy;
+      n.rx = Math.min(Math.max(n.rx, n.hw + 4), W - n.hw - 4);
+      n.ry = Math.min(Math.max(n.ry, n.up + 4), H - n.dn - 6);
+      n.el.style.transform = `translate(${(n.rx - n.anchorX).toFixed(1)}px, ${(n.ry - n.anchorY).toFixed(1)}px)`;
+    }
+    lineEls.forEach((el,i)=>{
+      const l = links[i];
+      el.setAttribute('x1', l.a.rx.toFixed(1)); el.setAttribute('y1', l.a.ry.toFixed(1));
+      el.setAttribute('x2', l.b.rx.toFixed(1)); el.setAttribute('y2', l.b.ry.toFixed(1));
+    });
+    // the layout stops solving, but the float keeps running
+    raf = requestAnimationFrame(step);
+  }
+
+  if(reduce){ for(let i=0;i<400;i++){ sleeping = false; step(); cancelAnimationFrame(raf); } }
+  else step();
+
+  const onResize = () => {
+    const pw = W, ph = H;
+    W = wrap.clientWidth; H = wrap.clientHeight;
+    if(!(pw > 0 && ph > 0)) return;
+    // a placed card keeps its position relative to the frame instead of
+    // being swept back into the auto layout
+    for(const n of nodes){
+      if(!n.fixed) continue;
+      const rx = n.relX !== undefined ? n.relX : n.x / pw;
+      const ry = n.relY !== undefined ? n.relY : n.y / ph;
+      n.x = Math.min(Math.max(rx * W, n.hw + 10), W - n.hw - 10);
+      n.y = Math.min(Math.max(ry * H, n.up + 10), H - n.dn - 12);
+      n.tx = n.x; n.ty = n.y;
+    }
+    fitted = false; alpha = Math.max(alpha, 0.35);   // re-resolve the free ones
+    wake(true);
+  };
+  window.addEventListener('resize', onResize);
+  netStop = () => { cancelAnimationFrame(raf); window.removeEventListener('resize', onResize); };
+}
+
+/* ---------- router ---------- */
+function route(){
+  const hash = location.hash || '#/';
+  let html, nav='index';
+  if(hash.startsWith('#/project/')){ html = viewProject(hash.split('/')[2]); }
+  else if(hash === '#/about'){ html = viewAbout(); nav='about'; }
+  else if(hash === '#/services'){ html = viewServices(); nav='services'; }
+  else if(hash === '#/contact'){ html = viewContact(); nav='contact'; }
+  else { html = viewIndex(); }
+  app.innerHTML = html;
+  bindSeq(app);
+  initNetwork();
+  document.querySelectorAll('nav.primary a').forEach(a=>a.classList.toggle('on', a.dataset.nav===nav));
+  document.getElementById('nav').classList.remove('open');
+  document.getElementById('burger').setAttribute('aria-expanded','false');
+  window.scrollTo(0,0);
+}
+
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-drag]')) return;
+  const f = e.target.closest('[data-filter]');
+  if(f){
+    activeFilter = f.dataset.filter;
+    if(location.hash !== '#/' && location.hash !== ''){ location.hash = '#/'; } else { route(); }
+    return;
+  }
+  const t = e.target.closest('[data-link-to]');
+  if(t){ location.hash = t.dataset.linkTo; }
+});
+// clicking the wordmark returns to Projects and puts the layout back
+document.getElementById('mark').addEventListener('click', e=>{
+  if(location.hash === '#/' || location.hash === ''){
+    e.preventDefault();
+    if(resetLayout) resetLayout();
+  }
+});
+document.getElementById('burger').addEventListener('click',e=>{
+  const nav = document.getElementById('nav');
+  e.currentTarget.setAttribute('aria-expanded', nav.classList.toggle('open'));
+});
+const totopEl = document.getElementById('totop');
+if(totopEl) totopEl.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+window.addEventListener('hashchange',route);
+
+route();
+</script>
+</body>
+</html>

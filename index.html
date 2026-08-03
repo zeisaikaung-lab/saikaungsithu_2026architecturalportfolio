@@ -354,55 +354,122 @@ html[data-theme="dark"] .sky .ribbon{opacity:.225}
 .phbox{position:relative;width:100%;aspect-ratio:16/9;background:var(--fill);overflow:hidden}
 
 /* diagram sequence */
-.seq{margin:54px 0;border-top:1px solid var(--rule);padding-top:24px}
-.seq-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px}
-.seq-nav{display:flex;gap:16px}
+.seq{margin:56px 0 0;border-top:1px solid var(--rule);padding-top:22px}
+.seq-top{display:flex;justify-content:space-between;align-items:baseline;gap:20px;margin-bottom:16px}
+.seq-nav{display:flex;gap:18px;align-items:center}
 .seq-nav button{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--ink-soft);transition:color var(--t)}
 .seq-nav button:hover{color:var(--ink)}
 .seq-stage{position:relative;width:100%;aspect-ratio:16/9;background:var(--fill);overflow:hidden}
 .seq-slide{position:absolute;inset:0;opacity:0;transition:opacity .45s ease}
 .seq-slide.on{opacity:1}
-.seq-cap{margin-top:18px;max-width:70ch;font-size:15px;font-weight:400;color:var(--ink-mid);min-height:3.4em}
-.seq-cap b{font-weight:500;letter-spacing:.05em;text-transform:uppercase;font-size:12.5px;color:var(--ink)}
+/* one tick per step, so the length of the sequence is visible at a glance */
+.seq-ticks{display:flex;gap:5px;margin-top:12px}
+.seq-ticks i{flex:1;height:2px;background:var(--rule-strong);transition:background var(--t)}
+.seq-ticks i.on{background:var(--ink)}
+.seq-cap{
+  display:grid;grid-template-columns:minmax(150px,1fr) minmax(0,3fr);
+  gap:clamp(28px,4vw,80px);margin-top:16px;min-height:4.2em;
+}
+.seq-cap b{
+  font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10px;
+  color:var(--ink);font-family:'JetBrains Mono',ui-monospace,monospace;padding-top:3px;
+}
+.seq-cap span{font-size:15px;font-weight:400;color:var(--ink-mid);line-height:1.65;max-width:62ch}
 
 /* credits */
-/* ---------- project page measures (restored) ---------- */
+/* ---------- project page ---------- */
+/* NB: the index headline is .hero — the project hero image must not share
+   that name or it inherits overflow:hidden and the entrance animation, which
+   collapsed it to 4px tall. */
+.p-hero{
+  position:relative;width:100%;height:clamp(320px, 58vh, 620px);
+  overflow:hidden;background:var(--fill);
+}
+.p-hero .shotimg{width:100%;height:100%;object-fit:cover;display:block}
+
 .title-block{
-  max-width:var(--max);margin:0 auto;padding:34px var(--gut) 0;
+  max-width:var(--max);margin:0 auto;padding:30px var(--gut) 0;
   display:grid;grid-template-columns:52px 1fr auto;gap:0 20px;align-items:start;
 }
-.title-block h1{margin:0;font-size:clamp(26px,3.2vw,44px);max-width:20ch}
+.title-block h1{
+  margin:0;font-size:clamp(26px,3.2vw,44px);max-width:20ch;
+  font-weight:200;letter-spacing:-.028em;line-height:1.08;
+}
 .title-block .place{color:var(--ink-mid);margin-top:9px;font-size:14px;font-weight:400}
 .glyph{width:52px;height:52px;margin-top:5px;color:var(--ink)}
 .glyph svg{width:100%;height:100%;display:block}
 .share{display:flex;gap:16px;padding-top:10px}
 .share a{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--ink-soft);transition:color var(--t)}
 .share a:hover{color:var(--ink)}
+
 .facts{
-  max-width:var(--max);margin:0 auto;padding:36px var(--gut) 42px;
+  max-width:var(--max);margin:0 auto;padding:30px var(--gut) 34px;
   display:grid;grid-template-columns:repeat(5,1fr);gap:24px;border-bottom:1px solid var(--rule);
 }
 .fact dt{margin:0 0 8px}
 .fact dd{margin:0;font-size:14px;font-weight:500;letter-spacing:-.005em}
+
 .stack{max-width:var(--max);margin:0 auto;padding:0 var(--gut)}
-.prose{max-width:74ch;margin:50px 0}
-.prose .body-copy{font-size:16px;line-height:1.75;font-weight:400;color:var(--ink-mid)}
-.prose .body-copy p+p{margin-top:1.15em}
-.prose .lead{margin:16px 0 26px;color:var(--ink)}
+
+/* Two real columns: the label sits in a narrow side rail and the whole brief
+   runs in the main column. Previously all three children shared one grid, so
+   the body wrapped back under the label and set at ~20 characters a line. */
+.prose{
+  display:grid;grid-template-columns:minmax(140px,0.9fr) minmax(0,4.1fr);
+  gap:clamp(28px,4vw,72px);margin:44px 0 8px;align-items:start;
+}
+.prose-side{position:sticky;top:calc(var(--nav-h) + 26px)}
+.prose-year{
+  margin:8px 0 0;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
+}
+.prose-main{min-width:0}
+.prose .lead{margin:0 0 26px;color:var(--ink);max-width:34ch}
+.prose .body-copy{
+  font-size:15.5px;line-height:1.72;font-weight:400;color:var(--ink-mid);
+  columns:2;column-gap:clamp(30px,3vw,56px);column-fill:balance;
+}
+.prose .body-copy p{margin:0 0 1.05em;break-inside:avoid}
+.prose .body-copy b{font-weight:500;color:var(--ink);letter-spacing:.01em}
+
+/* figures carry a caption and a running number */
+.shot-free{margin:38px 0 0;padding:0}
+.shot-free figcaption{
+  display:flex;gap:14px;align-items:baseline;margin-top:10px;
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
+  font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);
+}
+.shot-free figcaption b{font-weight:500;color:var(--ink-mid)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:38px 0 0;align-items:start}
+.duo .shot-free{margin:0}
+.freeimg{width:100%;height:auto;display:block;background:var(--fill)}
+.freeimg.fit{background:#ededed;padding:1.5%}
 
 .credits{
-  max-width:var(--max);padding:66px var(--gut) 18px;
+  max-width:var(--max);margin:0 auto;padding:56px var(--gut) 18px;
   display:grid;grid-template-columns:repeat(4,1fr);gap:32px;border-top:1px solid var(--rule);
 }
-.credits h3{margin:0 0 12px;font-size:13px;font-weight:500}
+.credits h3{
+  margin:0 0 12px;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
+}
 .credits ul{margin:0;padding:0;list-style:none;color:var(--ink-mid);font-size:14px;font-weight:400}
 .credits li{margin-bottom:5px}
 
+/* next / previous read as destinations, not buttons */
 .pager{
-  max-width:var(--max);padding:40px var(--gut) 76px;margin-top:38px;
+  max-width:var(--max);margin:44px auto 0;padding:26px var(--gut) 70px;
   display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--rule);
 }
-.pager button{font-size:14px;font-weight:500;color:var(--ink-mid);transition:color var(--t)}
+.pager button{
+  display:flex;flex-direction:column;gap:5px;text-align:left;
+  font-size:16px;font-weight:500;color:var(--ink-mid);transition:color var(--t);
+}
+.pager button:last-child{text-align:right;align-items:flex-end}
+.pager button i{
+  font-style:normal;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
+}
 .pager button:hover{color:var(--ink)}
 
 /* ---------- static pages ---------- */
@@ -534,7 +601,16 @@ footer{border-top:1px solid var(--rule)}
   .netwrap{position:static;height:auto!important;display:grid;grid-template-columns:1fr;gap:26px;margin:20px var(--gut) 48px}
   .node{position:static!important;transform:none!important;opacity:1!important}
   .n-proj{width:auto!important}
-  .n-theme,.net-edges,  .title-block{grid-template-columns:1fr;gap:16px}
+  .n-theme,.net-edges,  .p-hero{height:clamp(220px, 42vh, 380px)}
+  .prose{grid-template-columns:1fr;gap:14px}
+  .prose-side{position:static}
+  .prose .body-copy{columns:1}
+  .prose .lead{max-width:none}
+  .seq-cap{grid-template-columns:1fr;gap:8px}
+  .duo{grid-template-columns:1fr;gap:26px}
+  .pager{flex-direction:column;gap:26px}
+  .pager button:last-child{text-align:left;align-items:flex-start}
+  .title-block{grid-template-columns:1fr;gap:16px}
   .glyph{width:44px;height:44px}
   .share{padding-top:0}
   .facts{grid-template-columns:repeat(2,1fr)}
@@ -969,17 +1045,19 @@ const PROJECTS = [
     slug:'augmented-craft-pavilion', title:'Augmented Craft Pavilion',
     place:'Charoenkrung, Bangkok — Thailand', cat:'built', glyph:'pavilion',
     facts:[['Collaboration','Studio Igor Pantic + SoA+D fablab'],['Typology','Built installation'],['Scale','160 curved rattan members'],['Year','2025 — 2026'],['Status','Built · Best of Bangkok Design Week']],
-    lead:'A steam-bent rattan pavilion assembled under mixed-reality guidance, where a HoloLens replaces the drawing set and the craftsman keeps the tools.',
+    lead:'A steam-bent rattan pavilion combining traditional bending techniques with Mixed Reality guidance, where fabricators wear head-mounted displays to position bending forms and check geometry during assembly.',
     body:[
-      'Augmented Craft pairs a traditional rattan bending workshop with holographic setting-out. Fabricators wear head-mounted displays to read curve guides and connection markers directly onto the bending station and the assembly floor, checking geometry against the Rhino model as the piece is formed rather than after it.',
-      'The method lets a furniture-scale technique carry architectural spans. Steam-bent members reach across four roof modules without abandoning the hand skills that shape them — precision arrives through the digital guide, not through mechanisation.',
-      'On the construction team my work covered preparation of the digital files, projection of curve guides onto floor and boards through the HoloLens, and assembly of the bent elements against the 3D model. The build ran to a tight exhibition deadline with continuous technical adjustment on site.'
+      'Fabricators wear head-mounted displays to view holographic lines and markers, which help them position bending forms and check geometry during assembly. This approach allows precise fabrication of complex, curved structures while still using manual crafting methods.',
+      'Steam-bent rattan, typically used in furniture, is scaled up for architectural use — enabling larger spans and intricate spatial designs without abandoning traditional workshop practices. The project demonstrates how established craft techniques can integrate with modern digital tools for innovative design.',
+      '<b>Location.</b> Showcased at Bangkok Design Week 2026 at the Thailand Creative &amp; Design Center (TCDC). As part of the construction team, my main role was to prepare digital files, project curve guides onto the floor and boards using a HoloLens device, and assemble the curved rattan elements according to the 3D model.',
+      'This deepened my understanding of the intersection between theoretical frameworks and practical applications. I gained hands-on expertise in advanced technology and various rattan-bending methods while collaborating closely with local craftsmen and international teams. The project successfully overcame challenges involving tight time constraints, technical adjustments and complex structural forms.',
+      '<b>Roof system.</b> The rattan roof structure has four modules (A, B, C and D). Each module has 5 horizontal frames, 4 U-connection sets and 2 V-connection sets. Each horizontal frame has 4 pieces of curved rattan; each U-connection has 4; each V-connection has 2. The estimated total for the roof structural parts is 160 pieces of curved rattan.'
     ],
     seq:[
-      ['Burning rattan','Heat preparation ahead of bending. An electrical steam machine needed fifteen minutes per pole against a run of more than two hundred, so the team returned to a traditional steam chamber.'],
-      ['Bending rattan','Softened poles move to a manual bending station where craftspeople force and sculpt the thick members into uniform curves before the wood cools and sets permanently.'],
-      ['Mixed-reality outline','The Rhino file is delivered to Fologram through the Rhino plug-in. Running the model on the device draws the required part outline directly onto the bending station.'],
-      ['Court assembly','Pre-bent components are laid across an open courtyard. Marked plywood templates act as the structural guide as pieces are aligned, interconnected and secured into the final installation.']
+      ['Step 01 — Burning rattan','Preparing to bend the rattan using heat. We first used an electrical steam machine, but it took fifteen minutes per rattan and over two hundred pieces needed burning — so we moved to the traditional steam chamber method.'],
+      ['Step 02 — Bending rattan','After heating, the softened rattan poles move to a manual bending station. Craftspeople leverage a workbench setup to carefully force and sculpt the thick poles into uniform curves before the wood cools, hardens and sets permanently.'],
+      ['Step 03 — Mixed-reality outline','Creating the outline to bend the rattan at the bending station. I prepared the file in Rhino, then delivered it to Fologram through the Rhino plug-in. Running Fologram, I could see the parts I needed to draw on the device.'],
+      ['Step 04 — Assembly at the court','The pre-bent rattan components are laid out across a large open courtyard. Using the marked plywood templates as a precise structural guide, individual pieces are aligned, interconnected and secured to bring the final large-scale installation.']
     ],
     credits:[
       ['Collaboration',['Studio Igor Pantic Ltd','SoA+D fablab, KMUTT']],
@@ -993,17 +1071,19 @@ const PROJECTS = [
     slug:'next-of-payan', title:'Next of Payan',
     place:'Bagan — Myanmar', cat:'computational', glyph:'payan',
     facts:[['Type','Visitor centre — thesis'],['Typology','Cultural heritage'],['Structure','Robotic brick vault'],['Year','2024 — 2025'],['Status','Design thesis']],
-    lead:'A parametric brick vault for Bagan that keeps the ritual of laying brick and hands the geometry to the machine.',
+    lead:'Not just a continuation of ancient tradition, but a reinterpretation of it through the lens of future-making — where the soul of the stupa meets the logic of the machine.',
     body:[
-      'Bagan\u2019s ninth to thirteenth century stupas are eroding under the feet of visitors climbing them for the view, while UNESCO boundary rules rightly restrict heavy modern construction. The project answers with elevation rather than mass: nine-metre viewing platforms give the panorama back without a single step on the ruins.',
-      'Payan — the word for the brick mason\u2019s craft — becomes the foundation of a new typology. Robotic construction, digital tools and community learning converge on a single uniform brick module, so the labour of building remains legible even as the assembly changes hands.',
-      'The programme separates a public unpaid zone from an educational paid zone to regulate crowds, with a central plaza that turns over to puppet theatre and traditional markets after dark.'
+      'Rooted in the spiritual and material legacy of Bagan, this project envisions a new generation of brick architecture that speaks to both heritage and innovation. \u201cPayan\u201d (\u1015\u1014\u103a\u1038\u101b\u1036), historically tied to devotion, craftsmanship and collective memory, becomes the foundation for a new typology — one where robotic construction, digital tools and community-based learning converge.',
+      'This next chapter of Payan doesn\u2019t seek to replicate the past but to evolve it — preserving the ritual of brick-laying while transforming it into a symbol of technological renewal. The architecture becomes a living narrative, a dialogue between what was sacred and what is possible.',
+      '<b>Issue.</b> The ancient city of Bagan is facing a severe crisis: its historic 9th- to 13th-century brick stupas are actively deteriorating because tourists constantly climb all over them to see the view, all while strict UNESCO world heritage boundary regulations restrict any heavy modern construction.',
+      '<b>Programme.</b> The site serves three very different groups — global travellers who want scenic sunset spots, local residents who need space for traditional markets and theatre festivals, and academics researching local crafts. The programme elevates visitors onto dedicated 9-metre-high viewing platforms so they get panoramic views without stepping foot on the vulnerable ruins. It maps out a clear public \u201cunpaid zone\u201d and an educational \u201cpaid zone\u201d to naturally control crowds, creating a vibrant central event plaza for local community gatherings.',
+      '<b>Concept.</b> Inspired by Bagan\u2019s history, the structure modernises the traditional pointed arches found in ancient temples. Parametric software mirrors half of a classic arch to design a single modular column. This column profile is then repeated to form a continuous, load-bearing vault grid that easily supports the building\u2019s weight while honouring historical aesthetics.'
     ],
     seq:[
-      ['Site footprint','A localised curved footprint is subdivided and laid with diagonal reference lines to construct a rigid lattice framework across the site.'],
-      ['Variable extrusion','The grid extrudes at varying heights, generating a three-dimensional form that resolves into a field of overlapping pointed arches.'],
-      ['Wireframe optimisation','Stripping unnecessary structural members and running wireframe optimisation refines the frame into a system buildable from uniform brick modules.'],
-      ['Column module','Half a classic Bagan arch is mirrored into a single modular column, then repeated to form a continuous load-bearing vault grid without secondary beams.']
+      ['Site footprint','The generation logic begins with a localised curved site footprint that is systematically subdivided and laid with diagonal reference lines to construct a rigid lattice framework.'],
+      ['Variable extrusion','This grid is then extruded at varying heights to generate a dynamic, three-dimensional form that resolves into overlapping pointed arches.'],
+      ['Wireframe optimisation','By stripping away unnecessary structural components and running precise wireframe optimisation, the algorithm refines the overall framework into a robotically optimised structural system built seamlessly from uniform brick modules.'],
+      ['Column prototype','Extrapolated from a traditional pointed arch, the column profile uses computational mirroring and stacking rules to distribute loads evenly to the foundation slab. Clustered together, these modules form an open, continuous vault framework that eliminates secondary beams while maintaining a human-scaled civic space.']
     ],
     credits:[
       ['Advisors',['Arjan Waraluk Pansuwan','Arjan Dr. Kanjanee Budthimedhee','Mr. Elliott Robert Voth','Mr. Igor Pantic']],
@@ -1017,17 +1097,18 @@ const PROJECTS = [
     slug:'community-city-lab', title:'Community City Lab',
     place:'Phra Nakhon, Bangkok — Thailand', cat:'adaptive', glyph:'citylab',
     facts:[['Type','Adaptive reuse'],['Typology','Research &amp; training hub'],['Facade','Kinetic salvaged brick'],['Year','2023 — 2024'],['Status','Design study']],
-    lead:'An adaptive reuse hub that carves a courtyard out of a boxed-in block and rebuilds its skin from the bricks it already owned.',
+    lead:'An adaptive reuse project transforming a hidden, claustrophobic building footprint in Phra Nakhon into a dynamic Research, Training and Innovation Hub.',
     body:[
-      'The existing building sits hemmed in by neighbours beside FREC Bangkok and Bangkok 1899, leaving occupants with no outward view and the ground floor severed from the street. Carving a sunlit central courtyard and terracing the floorplates opens diagonal sightlines and bounces daylight deep into the plan.',
-      'A vertical gradient orders the programme: public market and café at street level, quiet learning and technology labs above. A lightwell cut directly over the statue of Chao Phraya Thammasakmontri returns the monument to view and anchors the memorial library on axis.',
-      'Heritage brick salvaged from the demolished 25 per cent is re-laid as a parametric screen. Panels thread onto vertical steel rods and rotate independently, so historic material performs as a sun-responsive facade tuned to seasonal paths.'
+      'The main challenge is that the structure is completely boxed in by massive neighbouring buildings, leaving users with the oppressive feeling of \u201cliving under a massive structure\u201d with absolutely no views. To break this visual isolation and open up the site, the design carves out a sunlit central courtyard and utilises a strict vertical gradient, moving from a bustling public market and café on the ground floor up to quiet learning and tech labs on the upper levels.',
+      'Finally, the building is wrapped in a high-performance parametric facade that dynamically filters daylight based on seasonal sun paths, featuring digital fabrication patterns inspired by the neighbourhood\u2019s traditional printing and woodcarving shops to bridge local heritage with future tech.',
+      '<b>Site.</b> Located in a dense urban pocket of Phra Nakhon, bounded by Nakhon Sawan Road, Lan Luang Road and historic transport canals, the site sits directly adjacent to FREC Bangkok and Bangkok 1899. The surrounding user base blends traditional local community members — legacy textbook printers, canal-edge woodcarvers, market vendors and neighbourhood families — with an incoming academic population of university students and research innovators.',
+      '<b>The memorial library.</b> The interior employs a strong symmetrical axis terminating at the statue of Chao Phraya Thammasakmontri, anchoring the building\u2019s historical narrative. The volume is washed in diffuse, glare-free daylighting via high-level translucent glazing to counteract the boxed-in constraints of the site. At the terminal point, a highly textured parametric wall crafted from reclaimed historic bricks is split by a vertical lightwell, channelling dramatic zenithal light directly onto the monument.'
     ],
     seq:[
-      ['Existing condition','Massive neighbouring structures enclose the footprint, producing the sensation of living under a single oppressive volume with no outlook.'],
-      ['Carve and terrace','A central courtyard is cut and floorplates step back, converting the trapped section into an open vertical journey with reflected daylight.'],
-      ['Programme conversion','Administrative area falls from 30 to 9.6 per cent, reclaiming 20.4 per cent of the plate and lifting community space from 24 to 45.9 per cent.'],
-      ['Kinetic brick screen','Salvaged heritage brick is remade as rotating modular panels, adapting the historic masonry to the sun without new material.']
+      ['Issue — enclosure','The project site is hidden and hemmed in by massive neighbouring structures, with a lack of any surrounding outward view. The statue of Chao Phraya Thammasakmontri is completely trapped and hidden. The result is the overwhelming feeling of \u201cliving under a massive structure\u201d, making the ground level dark, uninviting and severed from the street scale.'],
+      ['Concept — terracing','This terracing strategy opens up dramatic, diagonal sightlines and allows soft, reflected daylight to bounce deep into the floorplates, transforming the feeling of being trapped into an open, airy vertical journey. A vertical opening — a lightwell — is carved directly above the statue.'],
+      ['Programme conversion','The programmatic data shows a strategic conversion: by reducing administrative space from 30% to 9.6%, the design reclaims 20.4% of the floor plate to nearly double the community zone from 24% to 45.9%. Achieved with high spatial efficiency, leaving existing service cores practically untouched at a 12% baseline. 25% of the old building is demolished.'],
+      ['Kinetic brick facade','Original heritage bricks salvaged directly from the site\u2019s existing historic building are adapted into a modern parametric brick wall. The modular panels are threaded onto central vertical steel rods that let them rotate independently — a kinetic system allowing the historic brickwork to dynamically adapt to the sun.']
     ],
     credits:[
       ['Advisors',['Arjan Kisnaphol Wattanawanyoo','Arjan Chunn']],
@@ -1041,10 +1122,11 @@ const PROJECTS = [
     slug:'bungalow-house', title:'Bungalow House',
     place:'Riverfront — Myanmar', cat:'residential', glyph:'bungalow',
     facts:[['Type','Residence'],['Typology','Low-cost resort housing'],['Structure','Elevated stilt, timber'],['Year','2021 — 2022'],['Status','Design study']],
-    lead:'A single-storey stilt house that borrows the Myanmar gable and spends its budget on air, shade and view.',
+    lead:'A climate-responsive architectural language that seamlessly bridges traditional regional design with contemporary interior minimalism.',
     body:[
-      'The plan arranges modular blocks to set the zoning of the house while shielding living spaces from harsh solar radiation, then stretches the form and cuts openings to capture and channel cross-ventilation. A south-facing portico takes the worst of the sun.',
-      'Regional elements refine the result — an elevated stilt base for flood and airflow, a traditional gable above. Inside, an exposed timber waffle-grid ceiling and a matte charcoal feature wall frame a floor-to-ceiling glazed edge that dissolves the boundary to the water.'
+      'Externally, the low-cost, single-storey home features an elevated stilt design and a classic Myanmar-style gable roof, using a south-facing portico and strategic openings to block harsh sun radiation while maximising natural cross-ventilation.',
+      'Internally, the structural geometry transitions into a modern sanctuary defined by an exposed wood waffle-grid ceiling and a bold, matte charcoal-grey feature wall framing a white marble floating media console. The boundary between the indoors and the landscape is entirely dissolved by a floor-to-ceiling glass facade that opens to panoramic coastal views, creating a warm, sophisticated lounge area centred around personal wellness.',
+      '<b>Mood board.</b> The materials mix modern and local sources to draw out the sophisticated, tranquil beauty of the natural riverfront surroundings.'
     ],
     seq:[
       ['Addition','Primary modular blocks establish the zone layout while shielding the living spaces from direct solar gain.'],
@@ -1066,8 +1148,8 @@ const PROJECTS = [
     facts:[['Type','File-to-factory research'],['Typology','Masonry system'],['Joint','Laser-cut H-profile'],['Year','2018 — ongoing'],['Status','Prototype validated']],
     lead:'A mortarless masonry wall where the joint carries the geometry: interlocking H-profiles hold the curve so the mason does not have to.',
     body:[
-      'A custom Rhino and Grasshopper workflow translates an undulating parametric screen wall into a discrete, self-supporting masonry system. Traditional mortar is replaced by digitally fabricated interlocking H-profile joints that embed the geometric constraint directly into the assembly piece.',
-      'Each joint regulates macro-curvature and stability at once, so the wall\u2019s form is a consequence of its parts. The full pipeline — algorithmic form-finding, automated nesting, precision laser cutting — was validated by building the prototype, proving digital tolerance can carry straight through to physical construction.'
+      'This computational design project leverages a custom Rhino and Grasshopper workflow to translate a parametric, undulating screen wall into a discrete, self-supporting masonry system. By replacing traditional mortar with digitally fabricated, interlocking H-profile joints, the system embeds geometric constraints directly into the assembly pieces to regulate macro-curvature and structural stability.',
+      'The entire file-to-factory pipeline — spanning algorithmic form-finding, automated component nesting and precision laser-cutting — is successfully validated through a physical prototype, proving how high-accuracy digital tolerances can seamlessly streamline physical construction.'
     ],
     seq:[
       ['Form-finding','A parametric undulating screen wall is generated and discretised into a finite set of brick positions.'],
@@ -1089,8 +1171,8 @@ const PROJECTS = [
     facts:[['Type','Massing study'],['Typology','High-rise residential'],['Method','Four-stage evolutionary matrix'],['Year','Study'],['Status','Research']],
     lead:'A tower whose silhouette is an argument: every facet is a solar or wind decision made in Grasshopper.',
     body:[
-      'A parametric workflow translates environmental data straight into geometry. Across a four-stage evolutionary matrix the massing shifts from a baseline footprint into a bifurcated, faceted tower tuned for solar radiation and microclimate wind.',
-      'Carving the envelope mathematically maximises self-shading against peak thermal load while opening wind relief corridors that cool the structure. A standardised structural grid then aligns with deep-set modular facades and biophilic sky courts.'
+      'This performance-driven high-rise leverages a parametric Grasshopper workflow to directly translate environmental data into architectural geometry. Through a four-stage evolutionary matrix (Forms 1–4), the building\u2019s massing systematically shifts from a baseline footprint into a bifurcated, faceted tower optimised for solar radiation and microclimate winds.',
+      'By carving the envelope mathematically, the design achieves maximum self-shading to mitigate peak thermal loads while opening up wind relief corridors that naturally cool the structure. The final architecture seamlessly aligns a standardised structural grid with deep-set modular facades and biophilic sky courts, proving that striking, high-density forms can be strictly dictated by ecological performance.'
     ],
     seq:[
       ['Form 1','Baseline footprint established against site constraints and structural grid.'],
@@ -1112,8 +1194,9 @@ const PROJECTS = [
     facts:[['Type','Lighting design'],['Typology','Residential lobby'],['Method','DIALux photometric validation'],['Year','2024 — 2025'],['Status','Professional work — BIOARCHITEK']],
     lead:'Technical lighting design for a parametric wave ceiling, verified in false colour before a single fixture was hung.',
     body:[
-      'Conceptual mapping of track and pendant fixtures moved into rigorous computational analysis in DIALux. False-colour illuminance mapping verified lux distribution, optimised uniformity ratios and confirmed compliance with glare thresholds and energy targets.',
-      'Manufacturer IES and LDT data was imported for a high-fidelity radiosity visualisation, simulating beam angle and light-material interaction across reflective flooring and the parametric wave ceiling ahead of installation.'
+      'This project focuses on the technical lighting design and photometric validation for the main lobby of the Serpentin Residence. Utilising DIALux as the primary engineering platform, the workflow transitioned from conceptual mapping of track and pendant lighting fixtures into rigorous computational analysis.',
+      'The software\u2019s analytical engine was leveraged to execute false-colour illuminance mapping to verify precise lux distribution, optimise uniformity ratios and ensure strict compliance with glare (UGR) thresholds and energy-efficiency metrics.',
+      'The engineering process culminated in a high-fidelity 3D radiosity visualisation, importing manufacturer-specific IES/LDT data to accurately simulate beam angles and light-material interactions across the reflective flooring and the complex, parametric wave-ceiling architecture prior to physical installation.'
     ],
     seq:[
       ['Reference','Precedent study for the wave ceiling and lounge lighting character.'],
@@ -1279,7 +1362,7 @@ function viewProject(slug){
   const share = encodeURIComponent(location.href);
   return `
   <div class="view">
-    <div class="hero">${ph(p.files[0])}</div>
+    <div class="p-hero">${ph(p.files[0])}</div>
     <div class="title-block">
       <div class="glyph">${GLYPHS[p.glyph]}</div>
       <div><h1 class="display">${p.title}</h1><div class="place">${p.place}</div></div>
@@ -1293,35 +1376,41 @@ function viewProject(slug){
     </dl>
     <div class="stack">
       <div class="prose">
-        <p class="meta-label">Project brief</p>
-        <p class="lead">${p.lead}</p>
-        <div class="body-copy">${p.body.map(t=>`<p>${t}</p>`).join('')}</div>
+        <div class="prose-side">
+          <p class="meta-label">Project brief</p>
+          <p class="prose-year">${(p.facts.find(f=>f[0]==='Year')||[])[1]||''}</p>
+        </div>
+        <div class="prose-main">
+          <p class="lead">${p.lead}</p>
+          <div class="body-copy">${p.body.map(t=>`<p>${t}</p>`).join('')}</div>
+        </div>
       </div>
-      <figure class="shot-free">${phFree(p.files[1]||p.files[0])}</figure>
+      <figure class="shot-free">${phFree(p.files[1]||p.files[0])}<figcaption><b>Fig. 01</b>${p.title}</figcaption></figure>
       <section class="seq" data-seq>
         <div class="seq-top">
           <span class="meta-label" data-seq-count>01 / ${pad(p.seq.length)}</span>
           <div class="seq-nav"><button data-seq-prev>Prev</button><button data-seq-next>Next</button></div>
         </div>
+        <div class="seq-ticks">${p.seq.map((_,n)=>`<i class="${n===0?'on':''}"></i>`).join('')}</div>
         <div class="seq-stage">
           ${p.seq.map((s,n)=>`<div class="seq-slide ${n===0?'on':''}">${ph(p.files[n%p.files.length], pad(n+1))}</div>`).join('')}
         </div>
-        <div class="seq-cap" data-seq-cap><b>${p.seq[0][0]}</b> — ${p.seq[0][1]}</div>
+        <div class="seq-cap" data-seq-cap><b>${p.seq[0][0]}</b><span>${p.seq[0][1]}</span></div>
         <script type="application/json" data-seq-data>${JSON.stringify(p.seq)}<\/script>
       </section>
       <div class="duo">
-        <figure class="shot-free">${phFree(p.files[2]||p.files[0])}</figure>
-        <figure class="shot-free">${phFree(p.files[3]||p.files[1]||p.files[0])}</figure>
+        <figure class="shot-free">${phFree(p.files[2]||p.files[0])}<figcaption><b>Fig. 02</b></figcaption></figure>
+        <figure class="shot-free">${phFree(p.files[3]||p.files[1]||p.files[0])}<figcaption><b>Fig. 03</b></figcaption></figure>
       </div>
-      ${p.files[4]?`<figure class="shot-free">${phFree(p.files[4])}</figure>`:''}
-      ${p.files[5]?`<figure class="shot-free">${phFree(p.files[5])}</figure>`:''}
+      ${p.files[4]?`<figure class="shot-free">${phFree(p.files[4])}<figcaption><b>Fig. 04</b></figcaption></figure>`:''}
+      ${p.files[5]?`<figure class="shot-free">${phFree(p.files[5])}<figcaption><b>Fig. 05</b></figcaption></figure>`:''}
     </div>
     <section class="credits">
       ${p.credits.map(([h,items])=>`<div><h3>${h}</h3><ul>${items.map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('')}
     </section>
     <div class="pager">
-      <button data-link-to="#/project/${prev.slug}">← ${prev.title}</button>
-      <button data-link-to="#/project/${next.slug}">${next.title} →</button>
+      <button data-link-to="#/project/${prev.slug}"><i>← Previous</i>${prev.title}</button>
+      <button data-link-to="#/project/${next.slug}"><i>Next →</i>${next.title}</button>
     </div>
   </div>`;
 }
@@ -1457,14 +1546,16 @@ function viewContact(){
 function bindSeq(rootEl){
   rootEl.querySelectorAll('[data-seq]').forEach(sec=>{
     const data = JSON.parse(sec.querySelector('[data-seq-data]').textContent);
-    const slides = [...sec.querySelectorAll('.seq-slide')];
+    const slides = [...sec.querySelectorAll('.seq-stage .seq-slide')];
     const cap = sec.querySelector('[data-seq-cap]');
     const count = sec.querySelector('[data-seq-count]');
     let n = 0;
     function go(to){
       n = (to + data.length) % data.length;
       slides.forEach((s,i)=>s.classList.toggle('on', i===n));
-      cap.innerHTML = `<b>${data[n][0]}</b> — ${data[n][1]}`;
+      cap.innerHTML = `<b>${data[n][0]}</b><span>${data[n][1]}</span>`;
+      const ticks = sec.querySelectorAll('.seq-ticks i');
+      ticks.forEach((el,i)=>el.classList.toggle('on', i === n));
       count.textContent = `${pad(n+1)} / ${pad(data.length)}`;
     }
     sec.querySelector('[data-seq-prev]').addEventListener('click',()=>go(n-1));

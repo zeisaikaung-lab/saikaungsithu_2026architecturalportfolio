@@ -225,13 +225,21 @@ body.intro-lock{overflow:hidden}
    around its place in the graph, so the layout stays readable while it floats.
    Card proportions are the same as before, scaled to 0.70. */
 /* the graph now takes the full width */
+/* Three depth layers inside the canvas:
+     back  (z1) — smaller, fainter project cards
+     middle(z2) — the parametric dotted curve and the network edges
+     front (z3) — full-size project cards
+   `isolation` keeps this a self-contained stacking context so the layers
+   cannot interleave with the page around them. */
 .netwrap{
-  position:relative;overflow:hidden;
+  position:relative;overflow:hidden;isolation:isolate;
   margin:18px var(--gut) 60px;
   height:clamp(560px, calc(100vh - 244px), 1040px);
 }
 
-.net-edges{position:absolute;inset:0;width:100%;height:100%}
+/* the edge layer sits above the back cards, so it must not swallow their
+   clicks — without this, cards behind the curve cannot be picked up */
+.net-edges{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
 .net-edges line{stroke:var(--ink);stroke-width:1;opacity:.12;transition:opacity .3s,stroke-width .3s}
 .net-edges line.hot{opacity:.8;stroke-width:1.4}
 .net-edges line.cold{opacity:.035}
@@ -241,6 +249,46 @@ body.intro-lock{overflow:hidden}
   transition:opacity .3s;
 }
 .node.grabbing{cursor:grabbing}
+/* depth layers */
+/* Depth is driven per-frame from the engine, not by a fixed class: each card
+   drifts continuously between the back layer (behind the curve, small and
+   faint) and the front layer, so the field reads as real 3D space.
+   The engine writes opacity with !important because the card entrance
+   animation uses fill-mode:forwards, which outranks a normal declaration. */
+.n-proj{transform-origin:50% 50%;transition:filter .4s ease}
+.n-theme{z-index:3}
+.n-proj:hover{z-index:5 !important;filter:none !important}
+/* ---------- preview panel (stage one of the zoom) ---------- */
+.preview{
+  position:absolute;left:0;top:0;z-index:50;transform-origin:0 0;
+  width:min(560px, 76%);
+  background:var(--paper);border:1px solid var(--ink);
+  padding:10px 10px 0;cursor:pointer;
+  box-shadow:0 30px 80px rgba(0,0,0,.22);
+  transition:transform .46s cubic-bezier(.22,.72,.2,1), opacity .34s ease;
+  will-change:transform,opacity;
+}
+html[data-theme="dark"] .preview{box-shadow:0 30px 80px rgba(0,0,0,.65)}
+.pv-shot{position:relative;display:block;width:100%;aspect-ratio:16/10;overflow:hidden;background:var(--fill)}
+.pv-meta{padding:16px 6px 20px}
+.pv-name{margin:0;font-size:clamp(19px,2vw,26px);font-weight:200;letter-spacing:-.02em;line-height:1.12}
+.pv-sub{margin:8px 0 0;font-size:var(--t-data);color:var(--ink-mid)}
+.pv-line{
+  display:flex;gap:20px;margin:16px 0 0;padding-top:12px;border-top:1px solid var(--rule);
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;font-size:var(--t-label);
+  letter-spacing:.15em;text-transform:uppercase;color:var(--ink-mid);
+}
+.pv-cta{
+  margin:10px 0 0;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
+  font-size:var(--t-label);letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);
+}
+/* everything else recedes while a preview is open */
+.netwrap.previewing .node{opacity:.10 !important;transition:opacity .4s ease;pointer-events:none}
+.netwrap.previewing .net-edges,.netwrap.previewing > .sky{opacity:.14;transition:opacity .4s ease}
+@media(max-width:900px){
+  .preview{width:88%}
+  .pv-meta{padding:12px 4px 16px}
+}
 /* the cards carry an entrance animation with fill-mode:forwards, which
    outranks a normal declaration — so the faded states need !important */
 .node.cold{opacity:.14 !important}
@@ -309,6 +357,8 @@ html[data-theme="dark"] .n-proj.grabbing{box-shadow:0 18px 44px rgba(0,0,0,.6)}
    then disperses again. No
    twinkling: the movement is the whole event. */
 .sky{position:fixed;inset:0;z-index:0;pointer-events:none;color:var(--ink)}
+/* while it is the middle layer, the curve is scoped to the canvas */
+.netwrap > .sky{position:absolute;z-index:2}
 .sky svg{position:absolute;inset:0;width:100%;height:100%;display:block}
 .sky #skyRibWrap,.sky #skyExtraWrap{will-change:opacity}
 .sky circle{fill:currentColor}
@@ -680,8 +730,8 @@ footer{border-top:1px solid var(--rule)}
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
-.view{animation:fade .45s ease both}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.view{animation:fade .5s cubic-bezier(.2,.7,.2,1) both}
+@keyframes fade{from{opacity:0;transform:translateY(10px) scale(.995)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -1647,10 +1697,13 @@ function initNetwork(){
 
   // build nodes: one per project, one per shared theme
   const nodes = [];
+  // alternate front / back so neither layer clusters on one side
+  const BACK = new Set([1,3,5]);          // three of the seven sit behind the curve
   PROJECTS.forEach((p,i)=>{
     const a = (i / PROJECTS.length) * Math.PI * 2;
     nodes.push({
       id:p.slug, type:'proj', label:p.title, slug:p.slug, file:p.files[0], i,
+      layer: BACK.has(i) ? 'back' : 'front',
       year:(p.facts.find(f=>f[0]==='Year')||[])[1] || '',
       cat:p.cat,
       x: W/2 + Math.cos(a) * W*0.32, y: H/2 + Math.sin(a) * H*0.33,
@@ -1671,8 +1724,10 @@ function initNetwork(){
   nodes.forEach((n,i)=>{
     const big = n.type === 'proj';
     const room = Math.min(1, Math.max(.5, (wrap.clientWidth || 1200) / 1460));
-    n.ax = ((big ? 16 : 11) + rnd(i * 3.1) * (big ? 14 : 9)) * room;   // px of travel
-    n.ay = ((big ? 13 : 9)  + rnd(i * 5.7) * (big ? 12 : 8)) * room;
+    // the back layer is further away, so it travels less — parallax by depth
+    const depth = n.layer === 'back' ? 0.68 : 1;
+    n.ax = ((big ? 16 : 11) + rnd(i * 3.1) * (big ? 14 : 9)) * room * depth;
+    n.ay = ((big ? 13 : 9)  + rnd(i * 5.7) * (big ? 12 : 8)) * room * depth;
     n.fx = 0.00016 + rnd(i * 7.3) * 0.00013;                  // ~40–110s per cycle
     n.fy = 0.00013 + rnd(i * 9.1) * 0.00011;
     n.px = rnd(i * 2.9) * 6.283;
@@ -1702,6 +1757,7 @@ function initNetwork(){
       el.href = '#/project/' + n.slug;
       el.setAttribute('data-link','');
       el.style.setProperty('--i', n.i);
+      el.classList.add('layer-' + n.layer);
       el.innerHTML = `<span class="frame">${ph(n.file)}</span>`
                    + `<span class="c-name">${n.label}</span>`
                    + `<span class="c-year">${n.year}</span>`;
@@ -1716,17 +1772,28 @@ function initNetwork(){
   //  - a project card is centred on it
   //  - a theme's DOT is centred on it, so the edges meet the circle itself;
   //    its label then hangs below, which makes the footprint asymmetric.
+  const BACK_SCALE = 0.62, BACK_OPACITY = 0.42;
   nodes.forEach(n=>{
+    if(n.type === 'proj'){
+      // each card runs its own slow depth clock, 34-58s per round trip, so the
+      // field never pulses in unison and no two cards swap at the same moment
+      n.dPer = 34000 + rnd(n.i * 6.7) * 24000;
+      n.dPh  = rnd(n.i * 3.3) * Math.PI * 2;
+      n.depth = n.layer === 'back' ? 0 : 1;      // starting side
+      n.scale = 1;                               // bounds use full size
+    }
     const cap = n.el.querySelector('.cap');
     const dot = n.el.querySelector('.dot');
     // anchorX/anchorY, not ox/oy — the drift owns those names.
     // For a theme the anchor is the dot's real centre, measured rather than
     // assumed: `margin:0 auto` cannot centre a 9px dot in a 2px parent.
     if(n.type === 'proj'){
+      // the element is scaled visually, so its footprint shrinks with it
       n.anchorX = n.el.offsetWidth / 2;
       n.anchorY = n.el.offsetHeight / 2;
-      n.hw = n.anchorX;
-      n.up = n.anchorY; n.dn = n.anchorY;
+      n.hw = n.anchorX;                 // full size, so a card growing to the
+      n.up = n.anchorY; n.dn = n.anchorY;  // front can never cross the frame
+
     } else {
       const eb = n.el.getBoundingClientRect();
       const db = dot ? dot.getBoundingClientRect() : eb;
@@ -1741,6 +1808,16 @@ function initNetwork(){
 
   // ---- interaction ----
   let held = null, grabX = 0, grabY = 0, moved = 0, pinned = null;
+
+  // A card drifting under a STATIONARY pointer used to register as :hover and
+  // grow on its own. Hover is now latched only when the pointer actually moves:
+  // the card coming to you does nothing, only you going to the card counts.
+  let hoverId = null;
+  wrap.addEventListener('pointermove', e => {
+    const c = e.target && e.target.closest ? e.target.closest('.n-proj') : null;
+    hoverId = c ? c.dataset.id : null;
+  });
+  wrap.addEventListener('pointerleave', () => { hoverId = null; });
 
   // the wordmark in the header is the reset control
   resetLayout = () => {
@@ -1813,6 +1890,16 @@ function initNetwork(){
     };
     el.addEventListener('click', e=>{
       if(el.dataset.drag){ e.preventDefault(); e.stopPropagation(); return; }  // it was a drag
+      if(n.type === 'proj'){
+        // First click opens a preview — the project photo, name and dates.
+        // Clicking the preview again opens the full project page.
+        e.preventDefault(); e.stopPropagation();
+        if(matchMedia('(prefers-reduced-motion: reduce)').matches){
+          location.hash = '#/project/' + n.slug; return;
+        }
+        openPreview(n);
+        return;
+      }
       if(n.type === 'theme'){                 // tap a thread to hold it open
         e.preventDefault(); e.stopPropagation();
         pinned = pinned === n.id ? null : n.id;
@@ -1880,6 +1967,56 @@ function initNetwork(){
     fitted = true; gliding = true;                  // eased into place, not teleported
   }
 
+  // ---- preview panel: stage one of the zoom ----
+  let preview = null;
+  function closePreview(){
+    if(!preview) return;
+    const {el, node} = preview;
+    const r = node.el.getBoundingClientRect(), w = wrap.getBoundingClientRect();
+    el.style.transform = `translate(${r.left-w.left}px, ${r.top-w.top}px) scale(${r.width/el.offsetWidth})`;
+    el.style.opacity = '0';
+    wrap.classList.remove('previewing');
+    const p = preview; preview = null;
+    setTimeout(()=>{ if(p.el.parentElement) p.el.remove(); }, 420);
+  }
+  function openPreview(n){
+    if(preview){ closePreview(); return; }
+    const proj = PROJECTS.find(p => p.slug === n.slug);
+    const from = n.el.getBoundingClientRect(), box = wrap.getBoundingClientRect();
+    const el = document.createElement('div');
+    el.className = 'preview';
+    const yr   = (proj.facts.find(f=>f[0]==='Year')||[])[1] || '';
+    const type = (proj.facts.find(f=>f[0]==='Type'||f[0]==='Typology')||[])[1] || '';
+    el.innerHTML =
+        `<div class="pv-shot">${ph(proj.files[0])}</div>`
+      + `<div class="pv-meta">`
+      +   `<p class="pv-name">${proj.title}</p>`
+      +   `<p class="pv-sub">${proj.place}</p>`
+      +   `<p class="pv-line"><span>${yr}</span><span>${type}</span></p>`
+      +   `<p class="pv-cta">Click again to open the project</p>`
+      + `</div>`;
+    wrap.appendChild(el);
+    // start exactly on the card, then glide to the centre
+    const W2 = el.offsetWidth, H2 = el.offsetHeight;
+    el.style.transform = `translate(${from.left-box.left}px, ${from.top-box.top}px) scale(${from.width/W2})`;
+    el.style.opacity = '0';
+    void el.offsetWidth;
+    el.style.transform = `translate(${(box.width-W2)/2}px, ${(box.height-H2)/2}px) scale(1)`;
+    el.style.opacity = '1';
+    wrap.classList.add('previewing');
+    preview = {el, node:n};
+    el.addEventListener('click', ev=>{
+      ev.preventDefault(); ev.stopPropagation();
+      el.style.transform = `translate(${(box.width-W2)/2}px, ${(box.height-H2)/2}px) scale(1.12)`;
+      el.style.opacity = '0';
+      setTimeout(()=>{ location.hash = '#/project/' + n.slug; }, 260);
+    });
+  }
+  wrap.addEventListener('pointerdown', e=>{
+    if(preview && !e.target.closest('.preview') && !e.target.closest('.n-proj')) closePreview();
+  });
+  window.addEventListener('keydown', e=>{ if(e.key === 'Escape') closePreview(); });
+
   // ---- simulation ----
   // alpha cools from 1 to 0 so the layout actually converges; dragging reheats it
   let raf = 0, sleeping = false, alpha = 1;
@@ -1944,7 +2081,7 @@ function initNetwork(){
     // ---- the float: a slow lissajous around each node's place in the graph ----
     const t = performance.now();
     for(const n of nodes){
-      const still = (n === held) || n.el.matches(':hover');
+      const still = (n === held) || (n.type === 'proj' ? n.id === hoverId : n.el.matches(':hover'));
       if(!still && !reduce){
         n.ox += ((Math.sin(t * n.fx + n.px) * n.ax) - n.ox) * 0.04;
         n.oy += ((Math.cos(t * n.fy + n.py) * n.ay) - n.oy) * 0.04;
@@ -1953,7 +2090,39 @@ function initNetwork(){
       n.ry = n.y + n.oy;
       n.rx = Math.min(Math.max(n.rx, n.hw + 4), W - n.hw - 4);
       n.ry = Math.min(Math.max(n.ry, n.up + 4), H - n.dn - 6);
-      n.el.style.transform = `translate(${(n.rx - n.anchorX).toFixed(1)}px, ${(n.ry - n.anchorY).toFixed(1)}px)`;
+      if(n.type === 'proj'){
+        // 0 = furthest back, 1 = front. Smoothstepped so cards linger at each
+        // depth rather than sweeping through the middle at constant speed.
+        const raw = reduce ? (n.layer === 'back' ? 0 : 1)
+                           : (Math.sin(t / n.dPer * Math.PI * 2 + n.dPh) + 1) / 2;
+        const d = raw*raw*(3 - 2*raw);
+        n.depth = d;
+        // A card drifting under a stationary cursor used to snap to full size,
+        // which read as the card expanding by itself. The lift is now eased, so
+        // hovering grows it gently and a drift-by barely registers.
+        const held  = n.el.classList.contains('grabbing');
+        const hover = (n.id === hoverId);
+        const want  = (held || hover) ? 1 : d;
+        n.lift = n.lift === undefined ? want : n.lift + (want - n.lift) * (held ? 0.22 : 0.055);
+        const lift = n.zoom ? 1 : n.lift;
+        n.scale = (BACK_SCALE + (1 - BACK_SCALE) * lift) * (n.zoom ? n.zoomScale : 1);
+        const op = BACK_OPACITY + (1 - BACK_OPACITY) * lift;
+        // inline !important beats the stylesheet's !important, so the depth
+        // opacity must be REMOVED when a card is traced out — otherwise the
+        // stale value keeps it lit while .cold tries to dim it
+        if(n.el.classList.contains('cold') || n.el.classList.contains('dim')){
+          if(n.el.style.opacity) n.el.style.removeProperty('opacity');
+        } else {
+          n.el.style.setProperty('opacity', op.toFixed(3), 'important');
+        }
+        n.el.style.filter = lift > .8 ? 'none' : `grayscale(${((1-lift)*0.4).toFixed(2)})`;
+        // crossing the curve: below it while receding, above it while advancing
+        n.el.style.zIndex = n.zoom ? 40 : (held ? 6 : (lift < .5 ? 1 : 3));
+      }
+      const sc = n.scale || 1;
+      n.el.style.transform =
+        `translate(${(n.rx - n.anchorX).toFixed(1)}px, ${(n.ry - n.anchorY).toFixed(1)}px)`
+        + (sc !== 1 ? ` scale(${sc.toFixed(3)})` : '');
     }
     lineEls.forEach((el,i)=>{
       const l = links[i];
@@ -1985,7 +2154,12 @@ function initNetwork(){
     wake(true);
   };
   window.addEventListener('resize', onResize);
-  netStop = () => { cancelAnimationFrame(raf); window.removeEventListener('resize', onResize); };
+  netStop = () => {
+    cancelAnimationFrame(raf);
+    window.removeEventListener('resize', onResize);
+    if(preview && preview.el.parentElement) preview.el.remove();
+    preview = null;
+  };
 }
 
 /* ---------- router ---------- */
@@ -1997,8 +2171,22 @@ function route(){
   else if(hash === '#/services'){ html = viewServices(); nav='services'; }
   else if(hash === '#/contact'){ html = viewContact(); nav='contact'; }
   else { html = viewIndex(); }
+  // The curve lives inside the canvas on the projects view, so it must be
+  // rescued to <body> BEFORE the router replaces app.innerHTML — otherwise it
+  // is destroyed along with the canvas and never comes back.
+  const skyEl = document.getElementById('sky');
+  if(skyEl && skyEl.parentElement !== document.body){
+    document.body.insertBefore(skyEl, document.body.firstChild);
+  }
+
   app.innerHTML = html;
   bindSeq(app);
+
+  // on the projects view it becomes the middle layer of the three-layer field
+  const netEl = document.getElementById('net');
+  if(skyEl && netEl && nav === 'index') netEl.appendChild(skyEl);
+  if(skyEl) window.dispatchEvent(new Event('resize'));   // re-fit to the new box
+
   initNetwork();
   document.querySelectorAll('nav.primary a').forEach(a=>a.classList.toggle('on', a.dataset.nav===nav));
   document.getElementById('nav').classList.remove('open');

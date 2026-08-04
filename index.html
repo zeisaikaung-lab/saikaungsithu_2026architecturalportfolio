@@ -18,6 +18,16 @@
      data     500  (labels, values, titles, nav, credits)
    ============================================================ */
 :root{
+  /* Type scale — five steps, each clearly distinct. The page previously had
+     14 / 15 / 15.5 / 16px all in play, four sizes within 2px doing different
+     jobs, plus 9px and 10px mono labels that read as the same size. */
+  --t-title:44px;   /* project title            */
+  --t-lead:24px;    /* lead sentence            */
+  --t-body:15.5px;  /* running text             */
+  --t-data:13.5px;  /* metadata values, credits */
+  --t-label:10px;   /* all mono labels          */
+  /* Vertical rhythm, all multiples of 8 */
+  --s-1:8px; --s-2:16px; --s-3:24px; --s-4:40px; --s-5:56px; --s-6:72px;
   --cw:150px;
   --paper:#ffffff;
   --ink:#0f0f0f;
@@ -62,7 +72,7 @@ svg{stroke:currentColor}
 
 /* ---------- shared type ---------- */
 .display{font-weight:200;letter-spacing:-.03em;line-height:1.06}
-.lead{font-weight:200;font-size:clamp(19px,2vw,24px);line-height:1.48;letter-spacing:-.012em;max-width:46ch}
+.lead{font-weight:200;font-size:clamp(19px,2vw,var(--t-lead));line-height:1.48;letter-spacing:-.012em;max-width:46ch}
 .meta-label{
   font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;
   font-weight:500;font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--ink-soft);
@@ -328,6 +338,13 @@ html[data-theme="dark"] .sky .d-near {opacity:.285}
 html[data-theme="dark"] .sky .d-extra{opacity:.20}
 html[data-theme="dark"] .sky .ribbon{opacity:.225}
 
+/* hidden on desktop; the phone layout switches it on */
+.net-hint{
+  position:absolute;left:2px;bottom:6px;z-index:5;pointer-events:none;display:none;
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;font-size:9px;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);
+}
+
 /* keep the page above nothing in particular, but the header is fixed */
 /* footer sits at the bottom even when a page is short */
 .shell{
@@ -344,7 +361,7 @@ html[data-theme="dark"] .sky .ribbon{opacity:.225}
 .shotimg.fit{object-fit:contain;background:#ededed;padding:2.5%}
 .idxbadge{
   position:absolute;left:12px;bottom:10px;z-index:2;
-  font-family:'JetBrains Mono',monospace;font-weight:500;font-size:9.5px;letter-spacing:.1em;
+  font-family:'JetBrains Mono',monospace;font-weight:500;font-size:var(--t-label);letter-spacing:.1em;
   color:#fff;text-shadow:0 1px 7px rgba(0,0,0,.6);
 }
 .shot-free{margin:42px 0;padding:0}
@@ -354,10 +371,10 @@ html[data-theme="dark"] .sky .ribbon{opacity:.225}
 .phbox{position:relative;width:100%;aspect-ratio:16/9;background:var(--fill);overflow:hidden}
 
 /* diagram sequence */
-.seq{margin:56px 0 0;border-top:1px solid var(--rule);padding-top:22px}
+.seq{margin:var(--s-6) 0 0;border-top:1px solid var(--rule);padding-top:var(--s-3)}
 .seq-top{display:flex;justify-content:space-between;align-items:baseline;gap:20px;margin-bottom:16px}
 .seq-nav{display:flex;gap:18px;align-items:center}
-.seq-nav button{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--ink-soft);transition:color var(--t)}
+.seq-nav button{font-size:var(--t-label);letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--ink-soft);transition:color var(--t)}
 .seq-nav button:hover{color:var(--ink)}
 .seq-stage{position:relative;width:100%;aspect-ratio:16/9;background:var(--fill);overflow:hidden}
 .seq-slide{position:absolute;inset:0;opacity:0;transition:opacity .45s ease}
@@ -371,10 +388,10 @@ html[data-theme="dark"] .sky .ribbon{opacity:.225}
   gap:clamp(28px,4vw,80px);margin-top:16px;min-height:4.2em;
 }
 .seq-cap b{
-  font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10px;
+  font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:var(--t-label);
   color:var(--ink);font-family:'JetBrains Mono',ui-monospace,monospace;padding-top:3px;
 }
-.seq-cap span{font-size:15px;font-weight:400;color:var(--ink-mid);line-height:1.65;max-width:62ch}
+.seq-cap span{font-size:var(--t-body);font-weight:400;color:var(--ink-mid);line-height:1.72;max-width:62ch}
 
 /* credits */
 /* ---------- project page ---------- */
@@ -388,26 +405,26 @@ html[data-theme="dark"] .sky .ribbon{opacity:.225}
 .p-hero .shotimg{width:100%;height:100%;object-fit:cover;display:block}
 
 .title-block{
-  max-width:var(--max);margin:0 auto;padding:30px var(--gut) 0;
+  max-width:var(--max);margin:0 auto;padding:var(--s-4) var(--gut) 0;
   display:grid;grid-template-columns:52px 1fr auto;gap:0 20px;align-items:start;
 }
 .title-block h1{
-  margin:0;font-size:clamp(26px,3.2vw,44px);max-width:20ch;
+  margin:0;font-size:clamp(26px,3.2vw,var(--t-title));max-width:20ch;
   font-weight:200;letter-spacing:-.028em;line-height:1.08;
 }
-.title-block .place{color:var(--ink-mid);margin-top:9px;font-size:14px;font-weight:400}
+.title-block .place{color:var(--ink-mid);margin-top:var(--s-1);font-size:var(--t-data);font-weight:400}
 .glyph{width:52px;height:52px;margin-top:5px;color:var(--ink)}
 .glyph svg{width:100%;height:100%;display:block}
 .share{display:flex;gap:16px;padding-top:10px}
-.share a{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--ink-soft);transition:color var(--t)}
+.share a{font-size:var(--t-label);letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--ink-soft);transition:color var(--t)}
 .share a:hover{color:var(--ink)}
 
 .facts{
-  max-width:var(--max);margin:0 auto;padding:30px var(--gut) 34px;
+  max-width:var(--max);margin:0 auto;padding:var(--s-4) var(--gut) var(--s-4);
   display:grid;grid-template-columns:repeat(5,1fr);gap:24px;border-bottom:1px solid var(--rule);
 }
 .fact dt{margin:0 0 8px}
-.fact dd{margin:0;font-size:14px;font-weight:500;letter-spacing:-.005em}
+.fact dd{margin:0;font-size:var(--t-data);font-weight:500;letter-spacing:-.005em}
 
 .stack{max-width:var(--max);margin:0 auto;padding:0 var(--gut)}
 
@@ -416,59 +433,59 @@ html[data-theme="dark"] .sky .ribbon{opacity:.225}
    the body wrapped back under the label and set at ~20 characters a line. */
 .prose{
   display:grid;grid-template-columns:minmax(140px,0.9fr) minmax(0,4.1fr);
-  gap:clamp(28px,4vw,72px);margin:44px 0 8px;align-items:start;
+  gap:clamp(28px,4vw,72px);margin:var(--s-5) 0 var(--s-1);align-items:start;
 }
 .prose-side{position:sticky;top:calc(var(--nav-h) + 26px)}
 .prose-year{
-  margin:8px 0 0;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
-  font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
+  margin:var(--s-1) 0 0;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
+  font-size:var(--t-label);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
 }
 .prose-main{min-width:0}
 .prose .lead{margin:0 0 26px;color:var(--ink);max-width:34ch}
 .prose .body-copy{
-  font-size:15.5px;line-height:1.72;font-weight:400;color:var(--ink-mid);
+  font-size:var(--t-body);line-height:1.72;font-weight:400;color:var(--ink-mid);
   columns:2;column-gap:clamp(30px,3vw,56px);column-fill:balance;
 }
 .prose .body-copy p{margin:0 0 1.05em;break-inside:avoid}
 .prose .body-copy b{font-weight:500;color:var(--ink);letter-spacing:.01em}
 
 /* figures carry a caption and a running number */
-.shot-free{margin:38px 0 0;padding:0}
+.shot-free{margin:var(--s-5) 0 0;padding:0}
 .shot-free figcaption{
   display:flex;gap:14px;align-items:baseline;margin-top:10px;
   font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
-  font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);
+  font-size:var(--t-label);letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);
 }
 .shot-free figcaption b{font-weight:500;color:var(--ink-mid)}
-.duo{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:38px 0 0;align-items:start}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-3);margin:var(--s-5) 0 0;align-items:start}
 .duo .shot-free{margin:0}
 .freeimg{width:100%;height:auto;display:block;background:var(--fill)}
 .freeimg.fit{background:#ededed;padding:1.5%}
 
 .credits{
-  max-width:var(--max);margin:0 auto;padding:56px var(--gut) 18px;
-  display:grid;grid-template-columns:repeat(4,1fr);gap:32px;border-top:1px solid var(--rule);
+  max-width:var(--max);margin:0 auto;padding:var(--s-6) var(--gut) var(--s-2);
+  display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-4);border-top:1px solid var(--rule);
 }
 .credits h3{
   margin:0 0 12px;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
-  font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
+  font-size:var(--t-label);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
 }
-.credits ul{margin:0;padding:0;list-style:none;color:var(--ink-mid);font-size:14px;font-weight:400}
+.credits ul{margin:0;padding:0;list-style:none;color:var(--ink-mid);font-size:var(--t-data);font-weight:400}
 .credits li{margin-bottom:5px}
 
 /* next / previous read as destinations, not buttons */
 .pager{
-  max-width:var(--max);margin:44px auto 0;padding:26px var(--gut) 70px;
+  max-width:var(--max);margin:var(--s-5) auto 0;padding:var(--s-4) var(--gut) var(--s-6);
   display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--rule);
 }
 .pager button{
   display:flex;flex-direction:column;gap:5px;text-align:left;
-  font-size:16px;font-weight:500;color:var(--ink-mid);transition:color var(--t);
+  font-size:var(--t-body);font-weight:500;color:var(--ink-mid);transition:color var(--t);
 }
 .pager button:last-child{text-align:right;align-items:flex-end}
 .pager button i{
   font-style:normal;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
-  font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
+  font-size:var(--t-label);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
 }
 .pager button:hover{color:var(--ink)}
 
@@ -598,10 +615,47 @@ footer{border-top:1px solid var(--rule)}
   .head-row{flex-direction:column;align-items:flex-start;gap:18px}
   .head-row .sub{columns:1;column-rule:none;max-width:none;text-align:left}
   .head-meta{text-align:left;flex-direction:row;gap:16px;flex-wrap:wrap;white-space:normal}
-  .netwrap{position:static;height:auto!important;display:grid;grid-template-columns:1fr;gap:26px;margin:20px var(--gut) 48px}
-  .node{position:static!important;transform:none!important;opacity:1!important}
-  .n-proj{width:auto!important}
-  .n-theme,.net-edges,  .p-hero{height:clamp(220px, 42vh, 380px)}
+  /* Phone: keep the interactive graph. Cards shrink, and the thread labels
+     are hidden until a thread is touched — "COMPUTATIONAL DESIGN" is ~140px
+     against a 354px canvas, so twelve of them at once is unreadable. */
+  :root{--cw:92px}
+  /* the header was pushing the canvas 542px down, so most of the graph sat
+     below the fold on first load — tighten it so the work is visible */
+  .index-head{padding:10px var(--gut) 12px}
+  .hero{font-size:22px}
+  .head-row{margin-top:14px;padding-bottom:12px;gap:12px}
+  .head-row .sub{font-size:13px;line-height:1.55}
+  .head-meta{gap:4px 14px;font-size:8px}
+  .head-meta .meta-label{font-size:8px}
+  .chips{
+    margin-top:12px;flex-wrap:nowrap;overflow-x:auto;
+    scrollbar-width:none;-ms-overflow-style:none;
+    padding-bottom:2px;
+  }
+  .chips::-webkit-scrollbar{display:none}
+  .filter{flex:0 0 auto;padding:6px 12px;font-size:11.5px}
+  .netwrap{
+    position:relative;overflow:hidden;
+    height:clamp(430px, calc(100vh - 290px), 640px);
+    margin:14px var(--gut) 34px;
+  }
+  /* the label is taken out of flow so it contributes no width to the node's
+     measured footprint; it floats over the canvas only while a thread is traced */
+  .n-theme .cap{
+    position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    opacity:0;pointer-events:none;transition:opacity .25s ease;
+    font-size:8px;letter-spacing:.1em;margin-top:4px;
+    background:var(--paper);padding:1px 5px;border-radius:2px;white-space:nowrap;
+  }
+  .n-theme.on .cap,.n-theme.lit .cap{opacity:1}
+  .n-theme{position:absolute}
+  .n-theme .dot{width:11px;height:11px}          /* a 44px touch target via padding */
+  .n-theme{padding:16px;margin:-16px}
+  .n-proj{padding:5px 5px 0}
+  .n-proj .c-name{font-size:10px;margin-top:6px}
+  .n-proj .c-year{font-size:7px;margin-bottom:6px}
+  .net-hint{display:block;font-size:8px;left:0;bottom:2px}
+  .p-hero{height:clamp(220px, 42vh, 380px)}
   .prose{grid-template-columns:1fr;gap:14px}
   .prose-side{position:static}
   .prose .body-copy{columns:1}
@@ -740,12 +794,21 @@ footer{border-top:1px solid var(--rule)}
     {MID:.49, A:.33, F:1.00, S:.54, B:.09, F2:.95, P:.80, K:1.0, Q:.62},
     {MID:.51, A:.31, F:1.25, S:.20, B:.12, F2:.45, P:.45, K:1.7, Q:.15}
   ];
+  // Amplitude was a fraction of the frame HEIGHT, so a tall narrow phone
+  // stretched the wave to ~4.5x its desktop slope. Tie it to WIDTH instead:
+  // 0.497 leaves desktop pixel-identical. The 0.58 floor is a compromise —
+  // strict correction would give a slope of 0.29 but leave the wave a thin
+  // 24% band on a phone, so it trades a little slope for presence.
+  let ampK = 1;
+  function setAmp(w, h){
+    ampK = Math.min(1, Math.max(0.58, 0.497 * (w / Math.max(1, h))));
+  }
   const FAM = WAVE.map(v => (r,t) => {
     const env = .06 + .94*Math.abs(Math.sin(Math.PI*(t*v.K + v.Q)));
     return [
       .02 + t*.96,
-      v.MID + v.B*Math.sin(TAU*(t*v.F2 + v.P))
-            + v.A*env*Math.sin(TAU*(t*v.F + r*v.S))
+      v.MID + v.B*ampK*Math.sin(TAU*(t*v.F2 + v.P))
+            + v.A*ampK*env*Math.sin(TAU*(t*v.F + r*v.S))
     ];
   });
 
@@ -775,6 +838,7 @@ footer{border-top:1px solid var(--rule)}
   let farIdx = [], nearIdx = [], exIdx = [], twBands = [];
   function build(){
     W = host.clientWidth || 1; H = host.clientHeight || 1;
+    setAmp(W, H);
     let far = '', near = '', ex = '';
     const band = k => Math.floor(rnd(k*9.7+41) * TWN) % TWN;
     const open = g => `<g class="tw" data-tw="${g}">`;
@@ -906,7 +970,11 @@ footer{border-top:1px solid var(--rule)}
     tmx = (e.clientX/Math.max(1,innerWidth) - .5)*2;
     tmy = (e.clientY/Math.max(1,innerHeight) - .5)*2;
   }, {passive:true});
-  window.addEventListener('resize', ()=>{ build(); ribDrawnFor = -1; render('scatter', 0); });
+  window.addEventListener('resize', ()=>{
+    build(); ribDrawnFor = -1;              // amplitude changed, so redraw the sweep
+    cur = curveBase(fam); curE = curveExtra(fam);
+    render('scatter', 0);
+  });
 
   if(reduce) return;
 
@@ -1348,6 +1416,7 @@ function viewIndex(){
       ${filterChips()}
     </section>
     <section class="netwrap" id="net">
+      <span class="net-hint">Tap a dot to trace a thread · drag a card · tap to open</span>
       <svg class="net-edges"></svg>
     </section>
   </div>`;
@@ -1690,7 +1759,10 @@ function initNetwork(){
 
   function highlight(id){
     const set = id ? near[id] : null;
-    nodes.forEach(n=> n.el.classList.toggle('cold', !!set && !set.has(n.id)));
+    nodes.forEach(n=>{
+      n.el.classList.toggle('cold', !!set && !set.has(n.id));
+      n.el.classList.toggle('lit',  !!set && set.has(n.id));   // phone shows the label
+    });
     lineEls.forEach((el,i)=>{
       const l = links[i];
       const hot = set && (set.has(l.a.id) && set.has(l.b.id)) && (l.a.id === id || l.b.id === id);
@@ -1728,7 +1800,8 @@ function initNetwork(){
       held = null;
       el.classList.remove('grabbing');
       try{ el.releasePointerCapture(e.pointerId); }catch(_){}
-      if(moved >= 5){
+      const DRAG_MIN = matchMedia('(pointer: coarse)').matches ? 12 : 5;
+      if(moved >= DRAG_MIN){
         n.fixed = true;                       // dropped nodes stay where you put them
         n.tx = n.x; n.ty = n.y;               // so any later glide leaves it alone
         n.relX = n.x / W; n.relY = n.y / H;   // survive a resize proportionally

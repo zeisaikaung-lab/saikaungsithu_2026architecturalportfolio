@@ -518,13 +518,16 @@ html[data-theme="dark"] .sky .ribbon{opacity:.225}
   gap:clamp(28px,3.5vw,56px);margin:var(--s-5) 0 0;align-items:start;
 }
 .tower-split-clean .shot-free{margin:0}
-.tower-split-clean .tower-crop-render{overflow:hidden;background:var(--fill)}
+.tower-split-clean .tower-crop-render{overflow:hidden;background:transparent}
 .tower-split-clean .tower-crop-render img{width:calc(100% * 1140 / 1072);max-width:none;height:auto;display:block}
-.tower-split-clean .tower-crop-matrix{background:#f6f6f6;padding:3%;border:1px solid var(--rule)}
+.tower-split-clean .tower-crop-matrix{background:transparent;padding:0;border:0}
 .tower-split-clean .tower-crop-matrix-in{overflow:hidden}
 .tower-split-clean .tower-crop-matrix-in img{
   width:calc(100% * 882 / 736);max-width:none;height:auto;display:block;
   margin-left:calc(-100% * 6 / 736);margin-top:calc(-100% * 9 / 736);
+}
+.tower-split-clean .tower-crop-matrix-in img.transparent-ready{
+  width:100%;margin:0;
 }
 .tower-split-clean .seq-clean{margin-top:var(--s-4);padding-top:var(--s-3);border-top:1px solid var(--rule)}
 .tower-split-clean .seq-steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:14px}
@@ -1708,7 +1711,53 @@ function viewContact(){
 }
 
 /* ---------- sequence ---------- */
+let towerMatrixCache = null;
+function applyTowerMatrixTransparency(rootEl){
+  const matImg = (rootEl || document).querySelector('.tower-crop-matrix-in img');
+  if(!matImg) return;
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if(towerMatrixCache){
+    matImg.src = isDark ? towerMatrixCache.dark : towerMatrixCache.light;
+    matImg.classList.add('transparent-ready');
+    return;
+  }
+  const srcImg = new Image();
+  srcImg.crossOrigin = 'anonymous';
+  srcImg.onload = () => {
+    const sx = 6, sy = 9, sw = 736, sh = srcImg.naturalHeight - 9;
+    const makeUrl = dark => {
+      const c = document.createElement('canvas');
+      c.width = sw; c.height = sh;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(srcImg, sx, sy, sw, sh, 0, 0, sw, sh);
+      const id = ctx.getImageData(0, 0, sw, sh), d = id.data;
+      for(let p = 0; p < d.length; p += 4){
+        const r = d[p], g = d[p+1], b = d[p+2];
+        const sat = Math.max(r, g, b) - Math.min(r, g, b);
+        const lum = (r + g + b) / 3;
+        if(sat < 16 && lum > 224){
+          d[p+3] = Math.round(Math.max(0, Math.min(1, (238 - lum) / 14)) * 255);
+        }
+        if(dark && d[p+3] > 0 && sat < 24){
+          const inv = Math.min(245, Math.round(255 - lum * 0.82));
+          d[p] = inv; d[p+1] = inv; d[p+2] = inv;
+        }
+      }
+      ctx.putImageData(id, 0, 0);
+      return c.toDataURL('image/png');
+    };
+    towerMatrixCache = { light: makeUrl(false), dark: makeUrl(true) };
+    const nowDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    matImg.src = nowDark ? towerMatrixCache.dark : towerMatrixCache.light;
+    matImg.classList.add('transparent-ready');
+  };
+  srcImg.src = IMG['tower-matrix.jpg'];
+}
+lightBtn.addEventListener('click', () => setTimeout(() => applyTowerMatrixTransparency(app), 0));
+darkBtn.addEventListener('click', () => setTimeout(() => applyTowerMatrixTransparency(app), 0));
+
 function bindSeq(rootEl){
+  applyTowerMatrixTransparency(rootEl);
   rootEl.querySelectorAll('[data-seq]').forEach(sec=>{
     const data = JSON.parse(sec.querySelector('[data-seq-data]').textContent);
     const slides = [...sec.querySelectorAll('.seq-stage .seq-slide')];

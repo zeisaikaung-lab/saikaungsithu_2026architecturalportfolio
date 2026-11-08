@@ -408,7 +408,7 @@ html[data-theme="dark"] .sky .ribbon{opacity:.225}
 
 /* ---------- real imagery ---------- */
 .shotimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.shotimg.fit{object-fit:contain;background:#ededed;padding:2.5%}
+.shotimg.fit{object-fit:contain;background:transparent;padding:0}
 .idxbadge{
   position:absolute;left:12px;bottom:10px;z-index:2;
   font-family:'JetBrains Mono',monospace;font-weight:500;font-size:var(--t-label);letter-spacing:.1em;
@@ -416,8 +416,8 @@ html[data-theme="dark"] .sky .ribbon{opacity:.225}
 }
 .shot-free{margin:42px 0;padding:0}
 .duo .shot-free{margin:0}
-.freeimg{width:100%;height:auto;display:block;background:var(--fill)}
-.freeimg.fit{background:#ededed;padding:1.5%}
+.freeimg{width:100%;height:auto;display:block;background:transparent}
+.freeimg.fit{background:transparent;padding:0}
 .phbox{position:relative;width:100%;aspect-ratio:16/9;background:var(--fill);overflow:hidden}
 
 /* diagram sequence */
@@ -426,7 +426,7 @@ html[data-theme="dark"] .sky .ribbon{opacity:.225}
 .seq-nav{display:flex;gap:18px;align-items:center}
 .seq-nav button{font-size:var(--t-label);letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--ink-soft);transition:color var(--t)}
 .seq-nav button:hover{color:var(--ink)}
-.seq-stage{position:relative;width:100%;aspect-ratio:16/9;background:var(--fill);overflow:hidden}
+.seq-stage{position:relative;width:100%;aspect-ratio:16/9;background:var(--paper);border:1px solid var(--rule);overflow:hidden}
 .seq-slide{position:absolute;inset:0;opacity:0;transition:opacity .45s ease}
 .seq-slide.on{opacity:1}
 /* one tick per step, so the length of the sequence is visible at a glance */
@@ -449,10 +449,12 @@ html[data-theme="dark"] .sky .ribbon{opacity:.225}
    that name or it inherits overflow:hidden and the entrance animation, which
    collapsed it to 4px tall. */
 .p-hero{
-  position:relative;width:100%;height:clamp(320px, 58vh, 620px);
+  position:relative;width:100%;aspect-ratio:2000/864;max-height:clamp(380px, 58vh, 680px);
   overflow:hidden;background:var(--fill);
 }
-.p-hero .shotimg{width:100%;height:100%;object-fit:cover;display:block}
+.p-hero.hero-serpentin{aspect-ratio:2000/644;max-height:none}
+.p-hero.hero-computational{aspect-ratio:1316/812;max-height:clamp(400px, 60vh, 640px)}
+.p-hero .shotimg{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
 
 .title-block{
   max-width:var(--max);margin:0 auto;padding:var(--s-4) var(--gut) 0;
@@ -509,8 +511,8 @@ html[data-theme="dark"] .sky .ribbon{opacity:.225}
 .shot-free figcaption b{font-weight:500;color:var(--ink-mid)}
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-3);margin:var(--s-5) 0 0;align-items:start}
 .duo .shot-free{margin:0}
-.freeimg{width:100%;height:auto;display:block;background:var(--fill)}
-.freeimg.fit{background:#ededed;padding:1.5%}
+.freeimg{width:100%;height:auto;display:block;background:transparent}
+.freeimg.fit{background:transparent;padding:0}
 
 /* vertical tower + evolutionary matrix split (no crop, no overlap) */
 .tower-split-clean{
@@ -544,6 +546,31 @@ html[data-theme="dark"] .sky .ribbon{opacity:.225}
 @media(max-width:900px){
   .tower-split-clean{grid-template-columns:1fr}
   .tower-split-clean .seq-steps-grid{grid-template-columns:repeat(2,1fr)}
+}
+
+/* technical schedules & metrics */
+.lighting-specs-card{
+  border:1px solid var(--rule);padding:24px 26px;background:transparent;
+  display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;
+}
+.lighting-specs-card .spec-head{margin-bottom:18px;border-bottom:1px solid var(--rule);padding-bottom:12px}
+.lighting-specs-card .spec-head b{display:block;font-size:15px;margin-top:4px;font-weight:500;color:var(--ink);letter-spacing:-.01em}
+.lighting-specs-card .spec-grid{display:flex;flex-direction:column;gap:12px}
+.lighting-specs-card .spec-row{display:grid;grid-template-columns:130px 1fr;gap:14px;font-size:var(--t-data);border-bottom:1px solid var(--rule);padding-bottom:8px}
+.lighting-specs-card .spec-row:last-child{border-bottom:0;padding-bottom:0}
+.lighting-specs-card .spec-param{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);padding-top:2px}
+.lighting-specs-card .spec-val{color:var(--ink);font-weight:400;line-height:1.45}
+
+.fab-metrics-bar{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:18px;
+  margin:var(--s-4) 0 0;padding:18px 24px;border:1px solid var(--rule);
+}
+.fab-metrics-bar div{display:flex;flex-direction:column;gap:4px}
+.fab-metrics-bar b{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:var(--ink);letter-spacing:.02em}
+
+@media(max-width:768px){
+  .lighting-specs-card .spec-row{grid-template-columns:1fr;gap:4px}
+  .fab-metrics-bar{grid-template-columns:repeat(2,1fr)}
 }
 
 .credits{
@@ -1413,20 +1440,39 @@ const IMG={
 };
 const FIT=new Set(["bungalow-massing.jpg", "bungalow-moodboard.jpg", "citylab-exploded-axo.jpg", "citylab-facade-panels.jpg", "citylab-programme.jpg", "computational-joint.jpg", "computational-nesting.jpg", "computational-prototype.jpg", "computational-rhino.jpg", "pavilion-detail.jpg", "pavilion-modules.jpg", "pavilion-roof-system.jpg", "payan-facade-detail.jpg", "payan-robotic-column.jpg", "payan-section.jpg", "payan-vault-axo.jpg", "serpentin-concept.jpg", "serpentin-dialux.jpg", "tower-matrix.jpg"]);
 
+const DIAGRAM_CONFIG = {
+  'tower-matrix.jpg': { trimR: 0, trimL: 0, invertOnDark: true },
+  'pavilion-roof-system.jpg': { trimR: 0, trimL: 0, invertOnDark: true },
+  'pavilion-modules.jpg': { trimR: 0, trimL: 0, invertOnDark: true },
+  'pavilion-detail.jpg': { trimR: 0, trimL: 0, invertOnDark: true },
+  'payan-vault-axo.jpg': { trimR: 45, trimL: 0, invertOnDark: true },
+  'payan-section.jpg': { trimR: 0, trimL: 0, invertOnDark: true },
+  'payan-robotic-column.jpg': { trimR: 0, trimL: 0, invertOnDark: true },
+  'citylab-exploded-axo.jpg': { trimR: 0, trimL: 0, invertOnDark: true },
+  'citylab-facade-panels.jpg': { trimR: 0, trimL: 0, invertOnDark: true },
+  'citylab-programme.jpg': { trimR: 0, trimL: 0, invertOnDark: true },
+  'bungalow-massing.jpg': { trimR: 0, trimL: 8, invertOnDark: true },
+  'bungalow-moodboard.jpg': { trimR: 0, trimL: 0, invertOnDark: false },
+  'serpentin-concept.jpg': { trimR: 0, trimL: 0, invertOnDark: true }
+};
+
 /* fixed-ratio slot (hero, card back, diagram stage) */
 function ph(file,idx){
   const src = IMG[file];
   if(src){
     const fit = FIT.has(file) ? ' fit' : '';
-    return `<img class="shotimg${fit}" src="${src}" alt="" loading="lazy">` +
+    const tAttr = (DIAGRAM_CONFIG && DIAGRAM_CONFIG[file]) ? ` data-trans-file="${file}"` : '';
+    return `<img class="shotimg${fit}" src="${src}"${tAttr} alt="" loading="lazy">` +
            (idx ? `<span class="idxbadge">${idx}</span>` : '');
   }
   return `<div class="ph" data-file="${file}">${idx?`<span class="idx">${idx}</span>`:'<span></span>'}</div>`;
 }
 /* free-height slot — project pages show the drawing uncropped */
-function phFree(file){
+function phFree(file, transFile){
   const src = IMG[file];
-  if(src) return `<img class="freeimg${FIT.has(file)?' fit':''}" src="${src}" alt="" loading="lazy">`;
+  const tFile = transFile || (DIAGRAM_CONFIG && DIAGRAM_CONFIG[file] ? file : null);
+  const tAttr = tFile ? ` data-trans-file="${tFile}"` : '';
+  if(src) return `<img class="freeimg${FIT.has(file)?' fit':''}" src="${src}"${tAttr} alt="" loading="lazy">`;
   return `<div class="phbox"><div class="ph" data-file="${file}"><span></span></div></div>`;
 }
 
@@ -1506,6 +1552,147 @@ function viewIndex(){
   </div>`;
 }
 
+function renderHero(p){
+  if(p.slug === 'performance-tower') return '';
+  let cls = 'p-hero';
+  if(p.slug === 'serpentin-lighting') cls += ' hero-serpentin';
+  else if(p.slug === 'computational-practice') cls += ' hero-computational';
+  return `<div class="${cls}">${ph(p.files[0])}</div>`;
+}
+
+function renderSeq(p, slideFiles){
+  return `
+  <section class="seq" data-seq>
+    <div class="seq-top">
+      <span class="meta-label" data-seq-count>01 / ${pad(p.seq.length)}</span>
+      <div class="seq-nav"><button data-seq-prev>Prev</button><button data-seq-next>Next</button></div>
+    </div>
+    <div class="seq-ticks">${p.seq.map((_,n)=>`<i class="${n===0?'on':''}"></i>`).join('')}</div>
+    <div class="seq-stage">
+      ${p.seq.map((s,n)=>{
+        const f = slideFiles[n] || p.files[n % p.files.length];
+        return `<div class="seq-slide ${n===0?'on':''}">${ph(f, pad(n+1))}</div>`;
+      }).join('')}
+    </div>
+    <div class="seq-cap" data-seq-cap><b>${p.seq[0][0]}</b><span>${p.seq[0][1]}</span></div>
+    <script type="application/json" data-seq-data>${JSON.stringify(p.seq)}<\/script>
+  </section>`;
+}
+
+function renderProjectContent(p){
+  switch(p.slug){
+    case 'performance-tower':
+      return `
+      <div class="tower-split-clean">
+        <figure class="shot-free"><div class="tower-crop-render"><img src="${IMG[p.files[0]]}" alt="${p.title}" loading="lazy"></div><figcaption><b>Fig. 01</b>Rendered massing study — bifurcated tower &amp; sky courts</figcaption></figure>
+        <div>
+          <figure class="shot-free"><div class="tower-crop-matrix"><div class="tower-crop-matrix-in"><img src="${IMG[p.files[1]]}" data-trans-file="tower-matrix.jpg" alt="Four-stage evolutionary matrix" loading="lazy"></div></div><figcaption><b>Fig. 02</b>Four-stage solar &amp; wind evolutionary matrix (Forms 1–4)</figcaption></figure>
+          <section class="seq-clean">
+            <span class="meta-label">Evolutionary Sequence — 01 / ${pad(p.seq.length)}</span>
+            <div class="seq-steps-grid">
+              ${p.seq.map((s,n)=>`<div class="seq-step-card"><span class="st-num">${pad(n+1)}</span><b>${s[0]}</b><span>${s[1]}</span></div>`).join('')}
+            </div>
+          </section>
+        </div>
+      </div>`;
+
+    case 'augmented-craft-pavilion':
+      return `
+      <figure class="shot-free">${phFree(p.files[1])}<figcaption><b>Fig. 01</b>Mixed Reality fabrication on-site — projecting holographic curve guides onto bending jigs via Microsoft HoloLens</figcaption></figure>
+      ${renderSeq(p, [p.files[1], p.files[1], p.files[1], p.files[0]])}
+      <figure class="shot-free">${phFree(p.files[3], 'pavilion-roof-system.jpg')}<figcaption><b>Fig. 02</b>Roof system axonometric — 160 steam-bent rattan members arranged across four interlocking spatial modules (A–D)</figcaption></figure>
+      <div class="duo">
+        <figure class="shot-free">${phFree(p.files[2], 'pavilion-modules.jpg')}<figcaption><b>Fig. 03</b>Module taxonomy — horizontal frames, U-connections and V-connections</figcaption></figure>
+        <figure class="shot-free">${phFree(p.files[4], 'pavilion-detail.jpg')}<figcaption><b>Fig. 04</b>Connection detail — composite bamboo dowels and synthetic cord lashings</figcaption></figure>
+      </div>
+      <figure class="shot-free">${phFree(p.files[5])}<figcaption><b>Fig. 05</b>Public opening at TCDC courtyard — Augmented Craft Pavilion exhibited at Bangkok Design Week 2026</figcaption></figure>`;
+
+    case 'next-of-payan':
+      return `
+      <figure class="shot-free">${phFree(p.files[1], 'payan-vault-axo.jpg')}<figcaption><b>Fig. 01</b>Vault structural axonometric — modular pointed arches forming an interconnected self-supporting masonry grid</figcaption></figure>
+      ${renderSeq(p, [p.files[1], p.files[1], p.files[1], p.files[5]])}
+      <figure class="shot-free">${phFree(p.files[2], 'payan-section.jpg')}<figcaption><b>Fig. 02</b>Longitudinal section — 9-metre elevated viewing walkway protecting fragile UNESCO stupas from foot traffic while framing Bagan's horizon</figcaption></figure>
+      <div class="duo">
+        <figure class="shot-free">${phFree(p.files[3])}<figcaption><b>Fig. 03</b>Central event plaza — atmospheric night illumination for local religious festivals and outdoor theatre</figcaption></figure>
+        <figure class="shot-free">${phFree(p.files[4])}<figcaption><b>Fig. 04</b>Porous masonry envelope — alternating header bond coursing creating patterned daylight filigree</figcaption></figure>
+      </div>
+      <figure class="shot-free">${phFree(p.files[5], 'payan-robotic-column.jpg')}<figcaption><b>Fig. 05</b>Robotic column prototype — parametric stacking algorithms distributing dead loads to footing without secondary beams</figcaption></figure>`;
+
+    case 'community-city-lab':
+      return `
+      <figure class="shot-free">${phFree(p.files[1], 'citylab-exploded-axo.jpg')}<figcaption><b>Fig. 01</b>Exploded axonometric — civic learning spaces, community fabrication workshops, tiered internal courtyards and green roof</figcaption></figure>
+      ${renderSeq(p, [p.files[2], p.files[0], p.files[5], p.files[4]])}
+      <figure class="shot-free">${phFree(p.files[2])}<figcaption><b>Fig. 02</b>Internal courtyard atrium — shaded community plaza fostering informal interaction within the Phra Nakhon historic fabric</figcaption></figure>
+      <div class="duo">
+        <figure class="shot-free">${phFree(p.files[3])}<figcaption><b>Fig. 03</b>Community library &amp; research hub — timber reading tables, natural daylighting and community archive</figcaption></figure>
+        <figure class="shot-free">${phFree(p.files[5], 'citylab-programme.jpg')}<figcaption><b>Fig. 04</b>Programme conversion matrix — spatial analysis adapting traditional shophouse depths into flexible public functions</figcaption></figure>
+      </div>
+      <figure class="shot-free">${phFree(p.files[4], 'citylab-facade-panels.jpg')}<figcaption><b>Fig. 05</b>Kinetic brick facade modules — solar angle simulations, daylight filtering and parametric perforation studies</figcaption></figure>`;
+
+    case 'bungalow-house':
+      return `
+      <figure class="shot-free">${phFree(p.files[2])}<figcaption><b>Fig. 01</b>Double-height riverfront living pavilion — seamless indoor-outdoor transition, timber rafters and panoramic water views</figcaption></figure>
+      <figure class="shot-free">${phFree(p.files[1], 'bungalow-massing.jpg')}<figcaption><b>Fig. 02</b>Massing &amp; climatic evolution — four stages: volumetric addition, breeze channeling, vernacular gable pitch and tropical envelope</figcaption></figure>
+      ${renderSeq(p, [p.files[1], p.files[1], p.files[1], p.files[0]])}
+      <div class="duo">
+        <figure class="shot-free">${phFree(p.files[3], 'bungalow-moodboard.jpg')}<figcaption><b>Fig. 03</b>Materiality &amp; tactile moodboard — charred yakisugi timber, natural golden teak, fluted glass and brushed bronze hardware</figcaption></figure>
+        <div class="lighting-specs-card">
+          <div class="spec-head">
+            <span class="meta-label">Vernacular Craft &amp; Material Schedule</span>
+            <b>Tropical Riverfront Residence</b>
+          </div>
+          <div class="spec-grid">
+            <div class="spec-row"><span class="spec-param">Primary Frame</span><span class="spec-val">Reclaimed local golden teak posts &amp; exposed roof beams</span></div>
+            <div class="spec-row"><span class="spec-param">Cladding</span><span class="spec-val">Shou Sugi Ban charred timber (high durability &amp; insect resistance)</span></div>
+            <div class="spec-row"><span class="spec-param">Glazing</span><span class="spec-val">Floor-to-ceiling Low-E double glazing with acoustic interlayer</span></div>
+            <div class="spec-row"><span class="spec-param">Flooring</span><span class="spec-val">Continuous honed grey limestone &amp; wide-plank oiled teak</span></div>
+            <div class="spec-row"><span class="spec-param">Eaves</span><span class="spec-val">2.8 m deep cantilevers for solar cutoff &amp; monsoon protection</span></div>
+          </div>
+        </div>
+      </div>`;
+
+    case 'computational-practice':
+      return `
+      <figure class="shot-free">${phFree(p.files[1])}<figcaption><b>Fig. 01</b>Interlocking dry-joint assembly logic — five-step friction-fit sequence with zero mechanical fasteners or adhesives</figcaption></figure>
+      ${renderSeq(p, [p.files[3], p.files[1], p.files[2], p.files[0]])}
+      <div class="duo">
+        <figure class="shot-free">${phFree(p.files[3])}<figcaption><b>Fig. 02</b>Parametric form-finding — Grasshopper algorithm determining reciprocal curvature, member rotation angles and node spacing</figcaption></figure>
+        <figure class="shot-free">${phFree(p.files[2])}<figcaption><b>Fig. 03</b>CNC fabrication sheets — 2D component nesting on 12mm birch plywood optimising material yield and cutting paths</figcaption></figure>
+      </div>
+      <div class="fab-metrics-bar">
+        <div><span class="meta-label">Joint Type</span><b>Friction-Fit Dry Joint</b></div>
+        <div><span class="meta-label">Fasteners</span><b>0 Mechanical / 0 Glue</b></div>
+        <div><span class="meta-label">Milling Tolerance</span><b>±0.20 mm CNC</b></div>
+        <div><span class="meta-label">Material Yield</span><b>87.4% Sheet Efficiency</b></div>
+      </div>`;
+
+    case 'serpentin-lighting':
+      return `
+      <figure class="shot-free">${phFree(p.files[1])}<figcaption><b>Fig. 01</b>DIALux false-colour illuminance mapping — photometric verification of 300–500 lux target on working planes and compliance with UGR glare thresholds</figcaption></figure>
+      ${renderSeq(p, [p.files[2], p.files[2], p.files[1], p.files[0]])}
+      <div class="duo">
+        <figure class="shot-free">${phFree(p.files[2], 'serpentin-concept.jpg')}<figcaption><b>Fig. 02</b>Reflected ceiling plan — parametric curve division, accent pendants and linear track distribution</figcaption></figure>
+        <div class="lighting-specs-card">
+          <div class="spec-head">
+            <span class="meta-label">BIOARCHITEK — Photometric Schedule</span>
+            <b>DIALux EVO Engineering</b>
+          </div>
+          <div class="spec-grid">
+            <div class="spec-row"><span class="spec-param">Target Illuminance</span><span class="spec-val">300–500 lx (Main lounge &amp; circulation)</span></div>
+            <div class="spec-row"><span class="spec-param">Visual Comfort</span><span class="spec-val">UGR &lt; 19 (Strict glare suppression threshold)</span></div>
+            <div class="spec-row"><span class="spec-param">Colour Temp</span><span class="spec-val">3000 K (Warm ambient hospitality tone, CRI ≥ 90)</span></div>
+            <div class="spec-row"><span class="spec-param">Power Density</span><span class="spec-val">6.8 W/m² (Exceeds ASHRAE 90.1 standard)</span></div>
+            <div class="spec-row"><span class="spec-param">Simulation</span><span class="spec-val">Radiosity multi-bounce simulation via DIALux EVO</span></div>
+            <div class="spec-row"><span class="spec-param">Luminaires</span><span class="spec-val">Concealed linear LED coves &amp; 24° magnetic track spots</span></div>
+          </div>
+        </div>
+      </div>`;
+
+    default:
+      return '';
+  }
+}
+
 function viewProject(slug){
   const i = PROJECTS.findIndex(p=>p.slug===slug);
   if(i<0) return viewIndex();
@@ -1513,10 +1700,9 @@ function viewProject(slug){
   const prev = PROJECTS[(i-1+PROJECTS.length)%PROJECTS.length];
   const next = PROJECTS[(i+1)%PROJECTS.length];
   const share = encodeURIComponent(location.href);
-  const isTower = p.slug === 'performance-tower';
   return `
   <div class="view">
-    ${isTower ? '' : `<div class="p-hero">${ph(p.files[0])}</div>`}
+    ${renderHero(p)}
     <div class="title-block">
       <div class="glyph">${GLYPHS[p.glyph]}</div>
       <div><h1 class="display">${p.title}</h1><div class="place">${p.place}</div></div>
@@ -1539,38 +1725,7 @@ function viewProject(slug){
           <div class="body-copy">${p.body.map(t=>`<p>${t}</p>`).join('')}</div>
         </div>
       </div>
-      ${isTower ? `
-      <div class="tower-split-clean">
-        <figure class="shot-free"><div class="tower-crop-render"><img src="${IMG[p.files[0]]}" alt="${p.title}" loading="lazy"></div><figcaption><b>Fig. 01</b>Rendered massing study — bifurcated tower &amp; sky courts</figcaption></figure>
-        <div>
-          <figure class="shot-free"><div class="tower-crop-matrix"><div class="tower-crop-matrix-in"><img src="${IMG[p.files[1]]}" alt="Four-stage evolutionary matrix" loading="lazy"></div></div><figcaption><b>Fig. 02</b>Four-stage solar &amp; wind evolutionary matrix (Forms 1–4)</figcaption></figure>
-          <section class="seq-clean">
-            <span class="meta-label">Evolutionary Sequence — 01 / ${pad(p.seq.length)}</span>
-            <div class="seq-steps-grid">
-              ${p.seq.map((s,n)=>`<div class="seq-step-card"><span class="st-num">${pad(n+1)}</span><b>${s[0]}</b><span>${s[1]}</span></div>`).join('')}
-            </div>
-          </section>
-        </div>
-      </div>` : `
-      <figure class="shot-free">${phFree(p.files[1]||p.files[0])}<figcaption><b>Fig. 01</b>${p.title}</figcaption></figure>
-      <section class="seq" data-seq>
-        <div class="seq-top">
-          <span class="meta-label" data-seq-count>01 / ${pad(p.seq.length)}</span>
-          <div class="seq-nav"><button data-seq-prev>Prev</button><button data-seq-next>Next</button></div>
-        </div>
-        <div class="seq-ticks">${p.seq.map((_,n)=>`<i class="${n===0?'on':''}"></i>`).join('')}</div>
-        <div class="seq-stage">
-          ${p.seq.map((s,n)=>`<div class="seq-slide ${n===0?'on':''}">${ph(p.files[n%p.files.length], pad(n+1))}</div>`).join('')}
-        </div>
-        <div class="seq-cap" data-seq-cap><b>${p.seq[0][0]}</b><span>${p.seq[0][1]}</span></div>
-        <script type="application/json" data-seq-data>${JSON.stringify(p.seq)}<\/script>
-      </section>
-      <div class="duo">
-        <figure class="shot-free">${phFree(p.files[2]||p.files[0])}<figcaption><b>Fig. 02</b></figcaption></figure>
-        <figure class="shot-free">${phFree(p.files[3]||p.files[1]||p.files[0])}<figcaption><b>Fig. 03</b></figcaption></figure>
-      </div>
-      ${p.files[4]?`<figure class="shot-free">${phFree(p.files[4])}<figcaption><b>Fig. 04</b></figcaption></figure>`:''}
-      ${p.files[5]?`<figure class="shot-free">${phFree(p.files[5])}<figcaption><b>Fig. 05</b></figcaption></figure>`:''}`}
+      ${renderProjectContent(p)}
     </div>
     <section class="credits">
       ${p.credits.map(([h,items])=>`<div><h3>${h}</h3><ul>${items.map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('')}
@@ -1709,56 +1864,74 @@ function viewContact(){
   </div>`;
 }
 
-/* ---------- sequence ---------- */
-let towerMatrixCache = null;
-function applyTowerMatrixTransparency(rootEl){
-  const matImg = (rootEl || document).querySelector('.tower-crop-matrix-in img');
-  if(!matImg) return;
+/* ---------- diagram transparency & sequence ---------- */
+const diagramCache = {};
+
+function applyDiagramTransparency(rootEl){
+  const target = rootEl || document;
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  if(towerMatrixCache){
-    matImg.src = isDark ? towerMatrixCache.dark : towerMatrixCache.light;
-    matImg.classList.add('transparent-ready');
-    return;
+
+  // Support legacy tower crop selector
+  const towerMat = target.querySelector('.tower-crop-matrix-in img');
+  if(towerMat && !towerMat.getAttribute('data-trans-file')){
+    towerMat.setAttribute('data-trans-file', 'tower-matrix.jpg');
   }
-  const srcImg = new Image();
-  srcImg.crossOrigin = 'anonymous';
-  srcImg.onload = () => {
-    const isHd = srcImg.naturalWidth > 1000;
-    const sx = isHd ? 0 : 6, sy = isHd ? 0 : 9;
-    const sw = isHd ? srcImg.naturalWidth : 736, sh = isHd ? srcImg.naturalHeight : (srcImg.naturalHeight - 9);
-    const makeUrl = dark => {
-      const c = document.createElement('canvas');
-      c.width = sw; c.height = sh;
-      const ctx = c.getContext('2d');
-      ctx.drawImage(srcImg, sx, sy, sw, sh, 0, 0, sw, sh);
-      const id = ctx.getImageData(0, 0, sw, sh), d = id.data;
-      for(let p = 0; p < d.length; p += 4){
-        const r = d[p], g = d[p+1], b = d[p+2];
-        const sat = Math.max(r, g, b) - Math.min(r, g, b);
-        const lum = (r + g + b) / 3;
-        if(sat < 16 && lum > 224){
-          d[p+3] = Math.round(Math.max(0, Math.min(1, (238 - lum) / 14)) * 255);
+
+  const transImgs = target.querySelectorAll('img[data-trans-file]');
+  transImgs.forEach(img => {
+    const file = img.getAttribute('data-trans-file');
+    const cfg = DIAGRAM_CONFIG[file];
+    if(!cfg) return;
+
+    if(diagramCache[file]){
+      img.src = isDark ? diagramCache[file].dark : diagramCache[file].light;
+      img.classList.add('transparent-ready');
+      return;
+    }
+
+    const srcImg = new Image();
+    srcImg.crossOrigin = 'anonymous';
+    srcImg.onload = () => {
+      const sw = srcImg.naturalWidth - (cfg.trimR || 0) - (cfg.trimL || 0);
+      const sh = srcImg.naturalHeight;
+      const sx = cfg.trimL || 0;
+
+      const makeUrl = dark => {
+        const c = document.createElement('canvas');
+        c.width = sw; c.height = sh;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(srcImg, sx, 0, sw, sh, 0, 0, sw, sh);
+        const id = ctx.getImageData(0, 0, sw, sh), d = id.data;
+        for(let p = 0; p < d.length; p += 4){
+          const r = d[p], g = d[p+1], b = d[p+2];
+          const sat = Math.max(r, g, b) - Math.min(r, g, b);
+          const lum = (r + g + b) / 3;
+          if(sat < 18 && lum > 220){
+            d[p+3] = Math.round(Math.max(0, Math.min(1, (238 - lum) / 18)) * 255);
+          }
+          if(dark && cfg.invertOnDark && d[p+3] > 0 && sat < 24){
+            const inv = Math.min(245, Math.round(255 - lum * 0.82));
+            d[p] = inv; d[p+1] = inv; d[p+2] = inv;
+          }
         }
-        if(dark && d[p+3] > 0 && sat < 24){
-          const inv = Math.min(245, Math.round(255 - lum * 0.82));
-          d[p] = inv; d[p+1] = inv; d[p+2] = inv;
-        }
-      }
-      ctx.putImageData(id, 0, 0);
-      return c.toDataURL('image/png');
+        ctx.putImageData(id, 0, 0);
+        return c.toDataURL('image/png');
+      };
+
+      diagramCache[file] = { light: makeUrl(false), dark: makeUrl(true) };
+      const nowDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      img.src = nowDark ? diagramCache[file].dark : diagramCache[file].light;
+      img.classList.add('transparent-ready');
     };
-    towerMatrixCache = { light: makeUrl(false), dark: makeUrl(true) };
-    const nowDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    matImg.src = nowDark ? towerMatrixCache.dark : towerMatrixCache.light;
-    matImg.classList.add('transparent-ready');
-  };
-  srcImg.src = IMG['tower-matrix.jpg'];
+    srcImg.src = IMG[file];
+  });
 }
-lightBtn.addEventListener('click', () => setTimeout(() => applyTowerMatrixTransparency(app), 0));
-darkBtn.addEventListener('click', () => setTimeout(() => applyTowerMatrixTransparency(app), 0));
+
+lightBtn.addEventListener('click', () => setTimeout(() => applyDiagramTransparency(app), 0));
+darkBtn.addEventListener('click', () => setTimeout(() => applyDiagramTransparency(app), 0));
 
 function bindSeq(rootEl){
-  applyTowerMatrixTransparency(rootEl);
+  applyDiagramTransparency(rootEl);
   rootEl.querySelectorAll('[data-seq]').forEach(sec=>{
     const data = JSON.parse(sec.querySelector('[data-seq-data]').textContent);
     const slides = [...sec.querySelectorAll('.seq-stage .seq-slide')];

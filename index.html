@@ -523,8 +523,7 @@ html[data-theme="dark"] .sky .ribbon{opacity:.225}
 .tower-split-clean .tower-crop-matrix{background:transparent;padding:0;border:0}
 .tower-split-clean .tower-crop-matrix-in{overflow:hidden}
 .tower-split-clean .tower-crop-matrix-in img{
-  width:calc(100% * 882 / 736);max-width:none;height:auto;display:block;
-  margin-left:calc(-100% * 6 / 736);margin-top:calc(-100% * 9 / 736);
+  width:100%;height:auto;display:block;margin:0;
 }
 .tower-split-clean .tower-crop-matrix-in img.transparent-ready{
   width:100%;margin:0;
@@ -1724,7 +1723,9 @@ function applyTowerMatrixTransparency(rootEl){
   const srcImg = new Image();
   srcImg.crossOrigin = 'anonymous';
   srcImg.onload = () => {
-    const sx = 6, sy = 9, sw = 736, sh = srcImg.naturalHeight - 9;
+    const isHd = srcImg.naturalWidth > 1000;
+    const sx = isHd ? 0 : 6, sy = isHd ? 0 : 9;
+    const sw = isHd ? srcImg.naturalWidth : 736, sh = isHd ? srcImg.naturalHeight : (srcImg.naturalHeight - 9);
     const makeUrl = dark => {
       const c = document.createElement('canvas');
       c.width = sw; c.height = sh;

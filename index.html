@@ -512,6 +512,38 @@ html[data-theme="dark"] .sky .ribbon{opacity:.225}
 .freeimg{width:100%;height:auto;display:block;background:var(--fill)}
 .freeimg.fit{background:#ededed;padding:1.5%}
 
+/* vertical tower + evolutionary matrix split (no crop, no overlap) */
+.tower-split-clean{
+  display:grid;grid-template-columns:minmax(260px,0.56fr) minmax(0,1.44fr);
+  gap:clamp(28px,3.5vw,56px);margin:var(--s-5) 0 0;align-items:start;
+}
+.tower-split-clean .shot-free{margin:0}
+.tower-split-clean .tower-crop-render{overflow:hidden;background:var(--fill)}
+.tower-split-clean .tower-crop-render img{width:calc(100% * 1140 / 1072);max-width:none;height:auto;display:block}
+.tower-split-clean .tower-crop-matrix{background:#f6f6f6;padding:3%;border:1px solid var(--rule)}
+.tower-split-clean .tower-crop-matrix-in{overflow:hidden}
+.tower-split-clean .tower-crop-matrix-in img{
+  width:calc(100% * 882 / 736);max-width:none;height:auto;display:block;
+  margin-left:calc(-100% * 6 / 736);margin-top:calc(-100% * 9 / 736);
+}
+.tower-split-clean .seq-clean{margin-top:var(--s-4);padding-top:var(--s-3);border-top:1px solid var(--rule)}
+.tower-split-clean .seq-steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:14px}
+.tower-split-clean .seq-step-card{padding-top:12px;border-top:2px solid var(--rule-strong);transition:border-color var(--t)}
+.tower-split-clean .seq-step-card:hover{border-top-color:var(--ink)}
+.tower-split-clean .seq-step-card .st-num{
+  display:block;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:var(--t-label);
+  font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px;
+}
+.tower-split-clean .seq-step-card b{
+  display:block;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:var(--t-label);
+  font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);margin-bottom:8px;
+}
+.tower-split-clean .seq-step-card span{display:block;font-size:var(--t-data);line-height:1.6;color:var(--ink-mid)}
+@media(max-width:900px){
+  .tower-split-clean{grid-template-columns:1fr}
+  .tower-split-clean .seq-steps-grid{grid-template-columns:repeat(2,1fr)}
+}
+
 .credits{
   max-width:var(--max);margin:0 auto;padding:var(--s-6) var(--gut) var(--s-2);
   display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-4);border-top:1px solid var(--rule);
@@ -1479,9 +1511,10 @@ function viewProject(slug){
   const prev = PROJECTS[(i-1+PROJECTS.length)%PROJECTS.length];
   const next = PROJECTS[(i+1)%PROJECTS.length];
   const share = encodeURIComponent(location.href);
+  const isTower = p.slug === 'performance-tower';
   return `
   <div class="view">
-    <div class="p-hero">${ph(p.files[0])}</div>
+    ${isTower ? '' : `<div class="p-hero">${ph(p.files[0])}</div>`}
     <div class="title-block">
       <div class="glyph">${GLYPHS[p.glyph]}</div>
       <div><h1 class="display">${p.title}</h1><div class="place">${p.place}</div></div>
@@ -1504,6 +1537,19 @@ function viewProject(slug){
           <div class="body-copy">${p.body.map(t=>`<p>${t}</p>`).join('')}</div>
         </div>
       </div>
+      ${isTower ? `
+      <div class="tower-split-clean">
+        <figure class="shot-free"><div class="tower-crop-render"><img src="${IMG[p.files[0]]}" alt="${p.title}" loading="lazy"></div><figcaption><b>Fig. 01</b>Rendered massing study — bifurcated tower &amp; sky courts</figcaption></figure>
+        <div>
+          <figure class="shot-free"><div class="tower-crop-matrix"><div class="tower-crop-matrix-in"><img src="${IMG[p.files[1]]}" alt="Four-stage evolutionary matrix" loading="lazy"></div></div><figcaption><b>Fig. 02</b>Four-stage solar &amp; wind evolutionary matrix (Forms 1–4)</figcaption></figure>
+          <section class="seq-clean">
+            <span class="meta-label">Evolutionary Sequence — 01 / ${pad(p.seq.length)}</span>
+            <div class="seq-steps-grid">
+              ${p.seq.map((s,n)=>`<div class="seq-step-card"><span class="st-num">${pad(n+1)}</span><b>${s[0]}</b><span>${s[1]}</span></div>`).join('')}
+            </div>
+          </section>
+        </div>
+      </div>` : `
       <figure class="shot-free">${phFree(p.files[1]||p.files[0])}<figcaption><b>Fig. 01</b>${p.title}</figcaption></figure>
       <section class="seq" data-seq>
         <div class="seq-top">
@@ -1522,7 +1568,7 @@ function viewProject(slug){
         <figure class="shot-free">${phFree(p.files[3]||p.files[1]||p.files[0])}<figcaption><b>Fig. 03</b></figcaption></figure>
       </div>
       ${p.files[4]?`<figure class="shot-free">${phFree(p.files[4])}<figcaption><b>Fig. 04</b></figcaption></figure>`:''}
-      ${p.files[5]?`<figure class="shot-free">${phFree(p.files[5])}<figcaption><b>Fig. 05</b></figcaption></figure>`:''}
+      ${p.files[5]?`<figure class="shot-free">${phFree(p.files[5])}<figcaption><b>Fig. 05</b></figcaption></figure>`:''}`}
     </div>
     <section class="credits">
       ${p.credits.map(([h,items])=>`<div><h3>${h}</h3><ul>${items.map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('')}

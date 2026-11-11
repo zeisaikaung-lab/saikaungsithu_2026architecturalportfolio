@@ -137,8 +137,8 @@ nav.primary a.on{color:var(--ink);font-weight:500;border-color:var(--ink)}
 /* full-bleed: the projects view uses the whole window, like the header bar */
 .index-head{padding:10px var(--gut) 14px}
 .hero{
-  margin:0;font-size:clamp(25px,3.3vw,53px);line-height:1.08;max-width:none;
-  text-wrap:balance;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em;
+  margin:-.08em 0;font-size:clamp(25px,3.3vw,53px);line-height:1.08;max-width:none;
+  text-wrap:balance;overflow:hidden;padding:.08em 0;
 }
 .hero span{
   display:inline-block;opacity:0;
@@ -242,8 +242,9 @@ body.intro-lock{overflow:hidden}
    cannot interleave with the page around them. */
 .netwrap{
   position:relative;overflow:hidden;isolation:isolate;
-  margin:8px var(--gut) 40px;
-  height:clamp(460px, calc(100vh - 208px), 960px);
+  margin:8px var(--gut) 24px;
+  height:clamp(395px, calc(100vh - 280px), 860px);
+  height:clamp(395px, calc(100svh - 280px), 860px);
 }
 
 /* the edge layer sits above the back cards, so it must not swallow their
@@ -277,9 +278,16 @@ body.intro-lock{overflow:hidden}
   will-change:transform,opacity;
 }
 html[data-theme="dark"] .preview{box-shadow:0 32px 90px rgba(0,0,0,.65)}
-.pv-shot{position:relative;display:block;width:100%;height:clamp(175px, calc(100vh - 415px), 340px);overflow:hidden;background:var(--fill)}
+.pv-shot{position:relative;display:block;width:100%;height:clamp(150px, calc(100vh - 430px), 340px);height:clamp(150px, calc(100svh - 430px), 340px);overflow:hidden;background:var(--fill)}
 .pv-meta{padding:12px 6px 14px}
+.pv-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .pv-name{margin:0;font-size:clamp(19px,2vw,25px);font-weight:200;letter-spacing:-.02em;line-height:1.12}
+.pv-close{
+  flex:0 0 auto;width:28px;height:28px;display:grid;place-items:center;margin-top:-2px;
+  border:1px solid var(--rule);border-radius:50%;font-size:15px;line-height:1;color:var(--ink-mid);
+  transition:color var(--t),border-color var(--t);
+}
+.pv-close:hover{color:var(--ink);border-color:var(--ink)}
 .pv-sub{margin:5px 0 0;font-size:var(--t-data);color:var(--ink-mid)}
 .pv-line{
   display:flex;gap:20px;margin:10px 0 0;padding-top:8px;border-top:1px solid var(--rule);
@@ -294,41 +302,73 @@ html[data-theme="dark"] .preview{box-shadow:0 32px 90px rgba(0,0,0,.65)}
 .netwrap.previewing .node{opacity:.10 !important;transition:opacity .4s ease;pointer-events:none}
 .netwrap.previewing .net-edges,.netwrap.previewing > .sky{opacity:.14;transition:opacity .4s ease}
 @media(max-width:900px){
-  .preview{width:88%}
-  .pv-shot{height:auto;aspect-ratio:4/3;max-height:240px}
-  .pv-meta{padding:12px 4px 16px}
+  .preview{width:min(344px, 94%);max-height:calc(100% - 14px);padding:8px 8px 0}
+  .pv-shot{height:auto;aspect-ratio:16/10;max-height:clamp(128px, 24svh, 210px)}
+  .pv-meta{padding:9px 4px 11px}
+  .pv-line{margin:8px 0 0;padding-top:6px}
+  .pv-cta{margin:5px 0 0}
 }
 
 /* ---------- project figure click-to-zoom lightbox ---------- */
-.shot-free img{cursor:zoom-in}
+.shot-free img,.p-hero img{cursor:zoom-in}
 .lightbox{
   position:fixed;inset:0;z-index:120;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:28px 24px 22px;cursor:zoom-out;
+  padding:46px 24px 22px;cursor:zoom-out;
 }
 .lightbox::before{
   content:'';position:absolute;inset:0;background:var(--paper);
   opacity:0;transition:opacity .26s ease;pointer-events:none;
 }
 .lightbox.open::before{opacity:1}
+.lightbox-close{
+  position:fixed;top:16px;right:24px;z-index:2;
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
+  font-size:var(--t-label);letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-mid);background:var(--paper);border:1px solid var(--rule-strong);
+  padding:6px 12px;opacity:0;transition:opacity .24s ease,color var(--t),border-color var(--t);
+}
+.lightbox.open .lightbox-close{opacity:1}
+.lightbox-close:hover{color:var(--ink);border-color:var(--ink)}
 .lightbox-img{
   position:relative;z-index:1;
-  display:block;max-width:min(1380px, 92vw);max-height:80vh;
+  display:block;max-width:min(1380px, 92vw);max-height:76vh;max-height:74dvh;
   width:auto;height:auto;object-fit:contain;
   transform-origin:0 0;will-change:transform,opacity;
   box-shadow:0 28px 84px rgba(0,0,0,.18);
+  transition:opacity .16s ease;
 }
 html[data-theme="dark"] .lightbox-img:not(.is-trans){box-shadow:0 28px 84px rgba(0,0,0,.6)}
 .lightbox-img.is-trans{box-shadow:none}
-.lightbox-cap{
+.lightbox-foot{
   position:relative;z-index:1;
-  margin-top:16px;max-width:86ch;text-align:center;
-  font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
-  font-size:var(--t-label);letter-spacing:.15em;text-transform:uppercase;color:var(--ink-mid);
+  margin-top:16px;width:min(1100px, 92vw);
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px 24px;align-items:baseline;
   opacity:0;transform:translateY(6px);transition:opacity .26s ease .12s,transform .26s ease .12s;
 }
-.lightbox-cap b{margin-right:12px;color:var(--ink)}
-.lightbox.open .lightbox-cap{opacity:1;transform:none}
+.lightbox.open .lightbox-foot{opacity:1;transform:none}
+.lightbox-nav{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
+  font-size:var(--t-label);letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);
+  white-space:nowrap;padding:4px 0;border-bottom:1px solid transparent;transition:color var(--t),border-color var(--t);
+}
+.lightbox-nav:hover{color:var(--ink);border-color:var(--ink)}
+.lightbox-nav[hidden]{visibility:hidden;display:inline-block}
+.lightbox-cap{
+  text-align:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;
+  font-size:var(--t-label);letter-spacing:.15em;text-transform:uppercase;color:var(--ink-mid);
+}
+.lightbox-cap b{margin-right:10px;color:var(--ink)}
+.lightbox-count{color:var(--ink-soft);margin-right:12px}
+@media(max-width:640px){
+  .lightbox{padding:48px 16px calc(18px + env(safe-area-inset-bottom, 0px))}
+  .lightbox-close{top:12px;right:16px}
+  .lightbox-img{max-width:94vw;max-height:68dvh}
+  .lightbox-foot{grid-template-columns:1fr 1fr;gap:10px 16px}
+  .lightbox-cap{grid-column:1 / -1;order:-1;text-align:left}
+  .lightbox-nav{justify-self:start}
+  .lightbox-nav:last-child{justify-self:end}
+}
 /* the cards carry an entrance animation with fill-mode:forwards, which
    outranks a normal declaration — so the faded states need !important */
 .node.cold{opacity:.14 !important}
@@ -759,13 +799,13 @@ footer{border-top:1px solid var(--rule)}
 @media(max-width:1320px){ :root{--cw:134px} }
 @media(max-width:1100px){ :root{--cw:120px} }
 @media(max-width:1180px){
-  .netwrap{height:clamp(460px, calc(100vh - 224px), 900px)}
+  .netwrap{height:clamp(390px, calc(100vh - 280px), 820px);height:clamp(390px, calc(100svh - 280px), 820px)}
   .n-theme .cap{font-size:8px;letter-spacing:.1em}
   .facts{grid-template-columns:repeat(3,1fr)}
   .credits{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:900px){
-  :root{--gut:18px}
+  :root{--cw:clamp(78px,21.5vw,108px);--gut:18px;--s-3:20px;--s-4:28px;--s-5:36px;--s-6:48px}
   .burger{display:block}
   .rightset{gap:12px}
   nav.primary{
@@ -775,31 +815,21 @@ footer{border-top:1px solid var(--rule)}
   }
   nav.primary.open{max-height:320px}
   nav.primary a{width:100%;padding:15px 0;border-bottom:1px solid var(--rule);font-size:13px}
-  /* card field reflows to a simple grid; cards keep the flip, lose the scatter */
   .shell{padding-top:1px}
   body{padding-top:calc(var(--nav-h) + 1px)}
-  /* no room to drift on a phone — cards stack, threads hide */
-  .head-row{flex-direction:column;align-items:flex-start;gap:12px;margin-top:14px;padding-bottom:12px}
-  .head-row .sub{columns:1;column-rule:none;max-width:none;text-align:left;font-size:13px;line-height:1.55}
-  .head-meta{text-align:left;flex-direction:row;gap:4px 14px;flex-wrap:wrap;white-space:normal;font-size:8px}
+  .head-row{flex-direction:column;align-items:flex-start;gap:8px;margin-top:10px;padding-bottom:10px}
+  .head-row .sub{columns:1;column-rule:none;max-width:none;text-align:left;font-size:12.5px;line-height:1.48}
+  .head-meta{text-align:left;flex-direction:row;gap:2px 10px;flex-wrap:wrap;white-space:normal;font-size:8px}
   .head-meta .meta-label{font-size:8px}
-  /* Phone: keep the interactive graph. Cards shrink, and the thread labels
-     are hidden until a thread is touched — "COMPUTATIONAL DESIGN" is ~140px
-     against a 354px canvas, so twelve of them at once is unreadable. */
-  :root{--cw:94px}
-  .index-head{padding:10px var(--gut) 12px}
-  .hero{font-size:22px}
-  .chips{
-    margin-top:12px;flex-wrap:nowrap;overflow-x:auto;
-    scrollbar-width:none;-ms-overflow-style:none;
-    padding-bottom:2px;
-  }
-  .chips::-webkit-scrollbar{display:none}
-  .filter{flex:0 0 auto;padding:6px 12px;font-size:11.5px}
+  .index-head{padding:8px var(--gut) 10px}
+  .hero{font-size:clamp(20px,5.5vw,25px);line-height:1.12}
+  .chips{margin-top:10px;flex-wrap:wrap;gap:5px}
+  .filter{flex:0 0 auto;padding:4px 10px;font-size:10.5px;gap:5px}
   .netwrap{
     position:relative;overflow:hidden;
-    height:clamp(430px, calc(100vh - 280px), 640px);
-    margin:10px var(--gut) 32px;
+    height:clamp(345px, calc(100vh - 356px), 490px);
+    height:clamp(345px, calc(100svh - 356px), 490px);
+    margin:6px var(--gut) 18px;
   }
   /* the label is taken out of flow so it contributes no width to the node's
      measured footprint; it floats over the canvas only while a thread is traced */
@@ -811,29 +841,33 @@ footer{border-top:1px solid var(--rule)}
   }
   .n-theme.on .cap,.n-theme.lit .cap{opacity:1}
   .n-theme{position:absolute}
-  .n-theme .dot{width:11px;height:11px}          /* a 44px touch target via padding */
+  .n-theme .dot{width:10px;height:10px}          /* a 44px touch target via padding */
   .n-theme{padding:16px;margin:-16px}
-  .n-proj{padding:5px 5px 0}
-  .n-proj .c-name{font-size:10px;margin-top:6px}
-  .n-proj .c-year{font-size:7px;margin-bottom:6px}
+  .n-proj{padding:4px 4px 0}
+  .n-proj .c-name{font-size:9.5px;line-height:1.22;margin-top:5px}
+  .n-proj .c-year{font-size:6.8px;margin:2px 1px 5px;letter-spacing:.11em}
   .net-hint{display:block;font-size:8px;left:0;bottom:2px}
-  .p-hero,.p-hero.hero-computational,.p-hero.hero-bungalow{max-height:none;min-height:140px}
+  .p-hero,.p-hero.hero-bungalow{aspect-ratio:16/10;max-height:none;min-height:0}
+  .p-hero.hero-serpentin{aspect-ratio:16/9;max-height:none;min-height:0}
+  .p-hero.hero-computational{aspect-ratio:1316/796;max-height:none;min-height:0}
+  .tower-split-clean .tower-crop-render{width:min(256px,72vw);margin:0 auto}
   .prose{grid-template-columns:1fr;gap:14px}
   .prose-side{position:static}
   .prose .body-copy{columns:1}
   .prose .lead{max-width:none}
   .seq-cap{grid-template-columns:1fr;gap:8px}
-  .duo,.duo.duo--pavilion,.duo.duo--comp,.duo.duo--balanced{grid-template-columns:1fr;gap:26px}
-  .pager{flex-direction:column;gap:26px}
+  .duo,.duo.duo--pavilion,.duo.duo--comp,.duo.duo--balanced{grid-template-columns:1fr;gap:24px}
+  .pager{flex-direction:column;gap:24px;padding:var(--s-4) var(--gut) var(--s-6)}
   .pager button:last-child{text-align:left;align-items:flex-start}
-  .title-block{grid-template-columns:1fr;gap:16px}
-  .glyph{width:44px;height:44px}
+  .title-block{grid-template-columns:1fr;gap:14px;padding-top:var(--s-3)}
+  .glyph{width:40px;height:40px}
   .share{padding-top:0}
-  .facts{grid-template-columns:repeat(2,1fr)}
-  .cols{grid-template-columns:1fr;gap:34px}
+  .facts{grid-template-columns:repeat(2,1fr);gap:16px 20px;padding:var(--s-3) var(--gut)}
+  .facts .fact:last-child:nth-child(odd){grid-column:1 / -1;padding-top:12px;border-top:1px solid var(--rule)}
+  .cols{grid-template-columns:1fr;gap:30px}
   .row{grid-template-columns:1fr;gap:2px}
   .skills{grid-template-columns:1fr}
-  .credits{grid-template-columns:1fr}
+  .credits{grid-template-columns:1fr;padding-top:var(--s-5);gap:var(--s-3)}
   .fbar{flex-direction:column;gap:14px}
   .fset{gap:8px 20px;font-size:12.5px}
 }
@@ -845,6 +879,17 @@ footer{border-top:1px solid var(--rule)}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+@media print{
+  @page{margin:15mm 14mm}
+  header,footer,.share,.pager,#intro,.sky,.lightbox,.preview,.burger{display:none!important}
+  :root{--paper:#ffffff;--ink:#0f0f0f;--ink-mid:#444444;--ink-soft:#777777;--rule:#dddddd;--rule-strong:#bbbbbb}
+  body{background:#fff!important;color:#0f0f0f!important;padding-top:0!important}
+  .shell{padding-top:0!important}
+  .hero span,.head-row,.index-head .chips,.view{opacity:1!important;transform:none!important;animation:none!important}
+  .p-hero{max-height:none;break-inside:avoid}
+  .prose-side{position:static}
+  .facts,.shot-free,.seq-step-card,.lighting-specs-card,.fab-metrics-bar,.credits,.row,.duo{break-inside:avoid}
 }
 .view{animation:fade .5s cubic-bezier(.2,.7,.2,1) both}
 @keyframes fade{from{opacity:0;transform:translateY(10px) scale(.995)}to{opacity:1;transform:none}}
@@ -1495,6 +1540,20 @@ const IMG={
 };
 const FIT=new Set(["bungalow-massing.jpg", "bungalow-moodboard.jpg", "citylab-exploded-axo.jpg", "citylab-facade-panels.jpg", "citylab-programme.jpg", "computational-joint.jpg", "computational-nesting.jpg", "computational-prototype.jpg", "computational-rhino.jpg", "pavilion-detail.jpg", "pavilion-roof-system.jpg", "payan-facade-detail.jpg", "payan-robotic-column.jpg", "payan-section.jpg", "payan-vault-axo.jpg", "serpentin-concept.jpg", "serpentin-dialux.jpg", "tower-matrix.jpg"]);
 
+const IMG_DIM={
+  "bungalow-interior.jpg":[1500,777],"bungalow-massing.jpg":[1096,706],"bungalow-moodboard.jpg":[1019,576],
+  "bungalow-riverfront.jpg":[2000,866],"citylab-courtyard.jpg":[807,249],"citylab-exploded-axo.jpg":[1470,1159],
+  "citylab-facade-panels.jpg":[1000,720],"citylab-library.jpg":[1500,873],"citylab-programme.jpg":[1403,818],
+  "citylab-street.jpg":[2000,870],"computational-joint.jpg":[1384,354],"computational-nesting.jpg":[1324,511],
+  "computational-prototype.jpg":[1316,812],"computational-rhino.jpg":[1368,943],"pavilion-assembly.jpg":[727,436],
+  "pavilion-detail.jpg":[1404,1154],"pavilion-hero.jpg":[2000,864],"pavilion-modules.jpg":[1193,1191],
+  "pavilion-opening.jpg":[1500,550],"pavilion-roof-system.jpg":[1500,807],"payan-facade-detail.jpg":[884,499],
+  "payan-plaza-night.jpg":[1500,812],"payan-robotic-column.jpg":[1322,520],"payan-section.jpg":[1500,392],
+  "payan-sunset-platform.jpg":[2000,864],"payan-vault-axo.jpg":[1467,1069],"portrait-clean.jpg":[900,1194],
+  "portrait-glitch.jpg":[900,1194],"serpentin-concept.jpg":[645,624],"serpentin-dialux.jpg":[1379,634],
+  "serpentin-lobby.jpg":[2000,644],"tower-matrix.jpg":[2048,2048],"tower-render.jpg":[1140,2481]
+};
+
 const IMG_POS = {
   'tower-render.jpg': 'center 22%'
 };
@@ -1544,8 +1603,10 @@ function ph(file,idx,altText){
     const fit = FIT.has(file) ? ' fit' : '';
     const tAttr = (DIAGRAM_CONFIG && DIAGRAM_CONFIG[file]) ? ` data-trans-file="${file}"` : '';
     const pos = IMG_POS[file] ? ` style="object-position:${IMG_POS[file]}"` : '';
+    const dim = IMG_DIM[file];
+    const dimAttr = dim ? ` width="${dim[0]}" height="${dim[1]}"` : '';
     const alt = altText ? String(altText).replace(/"/g,'&quot;') : '';
-    return `<img class="shotimg${fit}" src="${src}"${tAttr}${pos} alt="${alt}" loading="lazy">` +
+    return `<img class="shotimg${fit}" src="${src}"${dimAttr}${tAttr}${pos} alt="${alt}">` +
            (idx ? `<span class="idxbadge">${idx}</span>` : '');
   }
   return `<div class="ph" data-file="${file}">${idx?`<span class="idx">${idx}</span>`:'<span></span>'}</div>`;
@@ -1555,8 +1616,10 @@ function phFree(file, transFile, altText){
   const src = IMG[file];
   const tFile = transFile || (DIAGRAM_CONFIG && DIAGRAM_CONFIG[file] ? file : null);
   const tAttr = tFile ? ` data-trans-file="${tFile}"` : '';
+  const dim = IMG_DIM[file];
+  const dimAttr = dim ? ` width="${dim[0]}" height="${dim[1]}"` : '';
   const alt = altText ? String(altText).replace(/"/g,'&quot;') : '';
-  if(src) return `<img class="freeimg${FIT.has(file)?' fit':''}" src="${src}"${tAttr} alt="${alt}" loading="lazy">`;
+  if(src) return `<img class="freeimg${FIT.has(file)?' fit':''}" src="${src}"${dimAttr}${tAttr} alt="${alt}">`;
   return `<div class="phbox"><div class="ph" data-file="${file}"><span></span></div></div>`;
 }
 
@@ -1642,7 +1705,8 @@ function renderHero(p){
   if(p.slug === 'serpentin-lighting') cls += ' hero-serpentin';
   else if(p.slug === 'computational-practice') cls += ' hero-computational';
   else if(p.slug === 'bungalow-house') cls += ' hero-bungalow';
-  return `<div class="${cls}">${ph(p.files[0], null, p.title)}</div>`;
+  const cap = `${p.title} — ${p.place}`.replace(/"/g,'&quot;');
+  return `<div class="${cls}" data-hero-cap="${cap}">${ph(p.files[0], null, p.title)}</div>`;
 }
 
 function renderSeqClean(p, label){
@@ -1679,9 +1743,9 @@ function renderProjectContent(p){
     case 'performance-tower':
       return `
       <div class="tower-split-clean">
-        <figure class="shot-free"><div class="tower-crop-render"><img src="${IMG[p.files[0]]}" alt="${p.title} rendered massing study" loading="lazy"></div><figcaption><b>Fig. 01</b>Rendered massing study — bifurcated tower &amp; sky courts</figcaption></figure>
+        <figure class="shot-free"><div class="tower-crop-render"><img src="${IMG[p.files[0]]}" width="1140" height="2481" alt="${p.title} rendered massing study"></div><figcaption><b>Fig. 01</b>Rendered massing study — bifurcated tower &amp; sky courts</figcaption></figure>
         <div>
-          <figure class="shot-free"><div class="tower-crop-matrix"><div class="tower-crop-matrix-in"><img src="${IMG[p.files[1]]}" data-trans-file="tower-matrix.jpg" alt="Four-stage evolutionary matrix" loading="lazy"></div></div><figcaption><b>Fig. 02</b>Four-stage solar &amp; wind evolutionary matrix (Forms 1–4)</figcaption></figure>
+          <figure class="shot-free"><div class="tower-crop-matrix"><div class="tower-crop-matrix-in"><img src="${IMG[p.files[1]]}" width="2048" height="2048" data-trans-file="tower-matrix.jpg" alt="Four-stage evolutionary matrix"></div></div><figcaption><b>Fig. 02</b>Four-stage solar &amp; wind evolutionary matrix (Forms 1–4)</figcaption></figure>
           ${renderSeqClean(p, 'Evolutionary Sequence')}
         </div>
       </div>`;
@@ -1836,10 +1900,10 @@ function viewAbout(){
     <div class="cols">
       <div>
         <figure class="portrait">
-          <img src="${IMG['portrait-clean.jpg']}" alt="Sai Kaung Si Thu">
-          <span class="gl g1"><img src="${IMG['portrait-glitch.jpg']}" alt=""></span>
-          <span class="gl g2"><img src="${IMG['portrait-glitch.jpg']}" alt=""></span>
-          <span class="gl g3"><img src="${IMG['portrait-glitch.jpg']}" alt=""></span>
+          <img src="${IMG['portrait-clean.jpg']}" width="900" height="1194" alt="Sai Kaung Si Thu">
+          <span class="gl g1"><img src="${IMG['portrait-glitch.jpg']}" width="900" height="1194" alt=""></span>
+          <span class="gl g2"><img src="${IMG['portrait-glitch.jpg']}" width="900" height="1194" alt=""></span>
+          <span class="gl g3"><img src="${IMG['portrait-glitch.jpg']}" width="900" height="1194" alt=""></span>
           <span class="sweep"></span>
         </figure>
         <p class="meta-label">Profile</p>
@@ -1983,7 +2047,9 @@ function applyDiagramTransparency(rootEl){
     if(!cfg) return;
 
     if(diagramCache[file]){
-      img.src = isDark ? diagramCache[file].dark : diagramCache[file].light;
+      const d = diagramCache[file];
+      img.src = isDark ? d.dark : d.light;
+      if(d.w && d.h){ img.width = d.w; img.height = d.h; }
       img.classList.add('transparent-ready');
       return;
     }
@@ -1991,6 +2057,7 @@ function applyDiagramTransparency(rootEl){
     const srcImg = new Image();
     srcImg.crossOrigin = 'anonymous';
     srcImg.onload = () => {
+      let outW = 0, outH = 0;
       const makeUrl = dark => {
         const c = document.createElement('canvas');
         const ctx = c.getContext('2d');
@@ -2021,6 +2088,7 @@ function applyDiagramTransparency(rootEl){
           }
         }
 
+        outW = cw; outH = ch;
         if(!cfg.transparentBg){
           return c.toDataURL('image/png');
         }
@@ -2077,9 +2145,10 @@ function applyDiagramTransparency(rootEl){
 
       const lightUrl = makeUrl(false);
       const darkUrl = (cfg.transparentBg && cfg.invertOnDark) ? makeUrl(true) : lightUrl;
-      diagramCache[file] = { light: lightUrl, dark: darkUrl };
+      diagramCache[file] = { light: lightUrl, dark: darkUrl, w: outW, h: outH };
       const nowDark = document.documentElement.getAttribute('data-theme') === 'dark';
       img.src = nowDark ? diagramCache[file].dark : diagramCache[file].light;
+      if(outW && outH){ img.width = outW; img.height = outH; }
       img.classList.add('transparent-ready');
     };
     srcImg.src = IMG[file];
@@ -2091,6 +2160,11 @@ darkBtn.addEventListener('click', () => setTimeout(() => applyDiagramTransparenc
 
 function bindSeq(rootEl){
   applyDiagramTransparency(rootEl);
+  rootEl.querySelectorAll('.p-hero img, .shot-free img').forEach(im => {
+    im.tabIndex = 0;
+    im.setAttribute('role', 'button');
+    if(!im.getAttribute('aria-label') && im.alt) im.setAttribute('aria-label', 'Zoom figure: ' + im.alt);
+  });
   rootEl.querySelectorAll('[data-seq]').forEach(sec=>{
     const data = JSON.parse(sec.querySelector('[data-seq-data]').textContent);
     const slides = [...sec.querySelectorAll('.seq-stage .seq-slide')];
@@ -2122,6 +2196,8 @@ function initNetwork(){
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   let W = wrap.clientWidth, H = wrap.clientHeight;
+  let compact = W <= 640;
+  let gs = Math.max(0.46, Math.min(1, Math.min(W / 980, H / 560)));
 
   // build nodes: one per project, one per shared theme
   const nodes = [];
@@ -2129,21 +2205,23 @@ function initNetwork(){
   const BACK = new Set([1,3,5]);          // three of the seven sit behind the curve
   PROJECTS.forEach((p,i)=>{
     const a = (i / PROJECTS.length) * Math.PI * 2;
+    const rxF = compact ? (i % 2 ? 0.24 : 0.36) : 0.32;
+    const ryF = compact ? (i % 2 ? 0.28 : 0.36) : 0.33;
     nodes.push({
       id:p.slug, type:'proj', label:p.title, slug:p.slug, file:p.files[0], i,
       layer: BACK.has(i) ? 'back' : 'front',
       year:(p.facts.find(f=>f[0]==='Year')||[])[1] || '',
       cat:p.cat,
-      x: W/2 + Math.cos(a) * W*0.32, y: H/2 + Math.sin(a) * H*0.33,
-      vx:0, vy:0, r:98
+      x: W/2 + Math.cos(a) * W * rxF, y: H/2 + Math.sin(a) * H * ryF,
+      vx:0, vy:0, r:98 * gs
     });
   });
   Object.keys(THEMES).forEach((k,i)=>{
     const a = (i / Object.keys(THEMES).length) * Math.PI * 2 + .4;
     nodes.push({
       id:k, type:'theme', label:THEMES[k],
-      x: W/2 + Math.cos(a) * W*0.12, y: H/2 + Math.sin(a) * H*0.13,
-      vx:0, vy:0, r:26
+      x: W/2 + Math.cos(a) * W*0.14, y: H/2 + Math.sin(a) * H*0.14,
+      vx:0, vy:0, r:26 * gs
     });
   });
   // per-node wander: amplitude, period and phase all differ, so the field
@@ -2151,7 +2229,7 @@ function initNetwork(){
   const rnd = k => { const s = Math.sin(k * 91.7) * 43758.5453; return s - Math.floor(s); };
   nodes.forEach((n,i)=>{
     const big = n.type === 'proj';
-    const room = Math.min(1, Math.max(.5, (wrap.clientWidth || 1200) / 1460));
+    const room = Math.min(1, Math.max(.36, (wrap.clientWidth || 1200) / 1460));
     // the back layer is further away, so it travels less — parallax by depth
     const depth = n.layer === 'back' ? 0.68 : 1;
     n.ax = ((big ? 16 : 11) + rnd(i * 3.1) * (big ? 14 : 9)) * room * depth;
@@ -2204,6 +2282,27 @@ function initNetwork(){
   const isNarrow = window.innerWidth <= 900;
   const BACK_SCALE = isNarrow ? 0.84 : 0.78;
   const BACK_OPACITY = isNarrow ? 0.72 : 0.62;
+  function measureNodes(){
+    nodes.forEach(n=>{
+      const cap = n.el.querySelector('.cap');
+      const dot = n.el.querySelector('.dot');
+      if(n.type === 'proj'){
+        n.anchorX = n.el.offsetWidth / 2;
+        n.anchorY = n.el.offsetHeight / 2;
+        n.hw = n.anchorX;
+        n.up = n.anchorY; n.dn = n.anchorY;
+      } else {
+        const eb = n.el.getBoundingClientRect();
+        const db = dot ? dot.getBoundingClientRect() : eb;
+        n.anchorX = (db.left - eb.left) + db.width / 2;
+        n.anchorY = (db.top  - eb.top)  + db.height / 2;
+        n.hw = Math.max(cap ? cap.offsetWidth / 2 : 0, db.width / 2 + 2);
+        n.up = n.anchorY;
+        n.dn = Math.max(n.el.offsetHeight - n.anchorY, db.height / 2);
+      }
+      n.hh = (n.up + n.dn) / 2;
+    });
+  }
   nodes.forEach(n=>{
     if(n.type === 'proj'){
       // each card runs its own slow depth clock, 34-58s per round trip, so the
@@ -2213,29 +2312,8 @@ function initNetwork(){
       n.depth = n.layer === 'back' ? 0 : 1;      // starting side
       n.scale = 1;                               // bounds use full size
     }
-    const cap = n.el.querySelector('.cap');
-    const dot = n.el.querySelector('.dot');
-    // anchorX/anchorY, not ox/oy — the drift owns those names.
-    // For a theme the anchor is the dot's real centre, measured rather than
-    // assumed: `margin:0 auto` cannot centre a 9px dot in a 2px parent.
-    if(n.type === 'proj'){
-      // the element is scaled visually, so its footprint shrinks with it
-      n.anchorX = n.el.offsetWidth / 2;
-      n.anchorY = n.el.offsetHeight / 2;
-      n.hw = n.anchorX;                 // full size, so a card growing to the
-      n.up = n.anchorY; n.dn = n.anchorY;  // front can never cross the frame
-
-    } else {
-      const eb = n.el.getBoundingClientRect();
-      const db = dot ? dot.getBoundingClientRect() : eb;
-      n.anchorX = (db.left - eb.left) + db.width / 2;
-      n.anchorY = (db.top  - eb.top)  + db.height / 2;
-      n.hw = Math.max(cap ? cap.offsetWidth / 2 : 0, db.width / 2 + 2);
-      n.up = n.anchorY;
-      n.dn = Math.max(n.el.offsetHeight - n.anchorY, db.height / 2);
-    }
-    n.hh = (n.up + n.dn) / 2;
   });
+  measureNodes();
 
   // ---- interaction ----
   let held = null, grabX = 0, grabY = 0, moved = 0, pinned = null;
@@ -2328,7 +2406,7 @@ function initNetwork(){
         if(matchMedia('(prefers-reduced-motion: reduce)').matches){
           location.hash = '#/project/' + n.slug; return;
         }
-        openPreview(n);
+        openPreview(n, e.detail === 0);
         return;
       }
       if(n.type === 'theme'){                 // tap a thread to hold it open
@@ -2358,47 +2436,55 @@ function initNetwork(){
     }
     const bw = x1 - x0, bh = y1 - y0;
     if(!(bw > 1 && bh > 1)) return;
-    const M = 26;                                   // room for drift
-    // scale the axes independently: only positions move, so no card distorts,
-    // and a graph has no correct aspect ratio to preserve
-    let sx = (W - M*2) / bw, sy = (H - M*2) / bh;
+    const M = compact ? 12 : 26;                     // room for drift
+    const MB = compact ? 22 : M;
+    // scale the axes independently on desktop; on narrow portrait viewports keep Y
+    // proportional so cards remain organically distributed instead of hugging top/bottom
+    let sx = (W - M*2) / bw, sy = (H - M - MB) / bh;
     sx = Math.min(Math.max(sx, 0.4), 3.2);
-    sy = Math.min(Math.max(sy, 0.4), 3.2);
+    sy = Math.min(Math.max(sy, 0.4), compact ? Math.max(1.15, sx * 1.35) : 3.2);
     if(!isFinite(sx) || !isFinite(sy)) return;
     const bx = (x0 + x1) / 2, by = (y0 + y1) / 2;
     for(const n of nodes){
       if(n.fixed){ n.tx = n.x; n.ty = n.y; continue; }
       n.tx = W/2 + (n.x - bx) * sx;
-      n.ty = H/2 + (n.y - by) * sy;
+      n.ty = (H - (compact ? 10 : 0))/2 + (n.y - by) * sy;
     }
     // stretching the axes can leave two cards or tag labels touching — push those apart
+    // while clamping inside every pass so border walls push nodes inward into open space
     const cards = nodes.filter(n=>n.type === 'proj' && !n.fixed);
-    for(let pass=0; pass<24; pass++){
+    const edgeX = compact ? 6 : 10, edgeT = compact ? 6 : 10, edgeB = compact ? 22 : 12;
+    const padC = compact ? 5 : 10;
+    const driftK = compact ? 0.25 : 0.85;
+    for(let pass=0; pass<44; pass++){
       let moved = false;
       for(let i=0;i<cards.length;i++){
         for(let j=i+1;j<cards.length;j++){
           const a = cards[i], c = cards[j];
-          // leave room for the drift so they cannot collide later either
-          const ox = (a.hw + c.hw + 10 + (a.ax + c.ax) * .85) - Math.abs(a.tx - c.tx);
-          const oy = (a.hh + c.hh + 10 + (a.ay + c.ay) * .85) - Math.abs(a.ty - c.ty);
-          if(ox > 0 && oy > 0){                     // overlapping in both axes
-            const push = (ox < oy ? ox : oy) / 2 + .5;
+          const ox = (a.hw + c.hw + padC + (a.ax + c.ax) * driftK) - Math.abs(a.tx - c.tx);
+          const oy = (a.hh + c.hh + padC + (a.ay + c.ay) * driftK) - Math.abs(a.ty - c.ty);
+          if(ox > 0 && oy > 0){
+            const push = (ox < oy ? ox : oy) / 2 + .75;
             if(ox < oy){ const s = a.tx <= c.tx ? -1 : 1; a.tx += push*s; c.tx -= push*s; }
             else       { const s = a.ty <= c.ty ? -1 : 1; a.ty += push*s; c.ty -= push*s; }
             moved = true;
           }
         }
       }
+      for(const n of cards){
+        n.tx = Math.min(Math.max(n.tx, n.hw + edgeX), W - n.hw - edgeX);
+        n.ty = Math.min(Math.max(n.ty, n.up + edgeT), H - n.dn - edgeB);
+      }
       if(!moved) break;
     }
     const tags = nodes.filter(n=>n.type === 'theme' && !n.fixed);
-    for(let pass=0; pass<24; pass++){
+    for(let pass=0; pass<32; pass++){
       let moved = false;
       for(let i=0;i<tags.length;i++){
         for(let j=i+1;j<tags.length;j++){
           const a = tags[i], c = tags[j];
-          const ox = (a.hw + c.hw + 16) - Math.abs(a.tx - c.tx);
-          const oy = (a.hh + c.hh + 18) - Math.abs(a.ty - c.ty);
+          const ox = (a.hw + c.hw + 16 + (a.ax + c.ax) * driftK) - Math.abs(a.tx - c.tx);
+          const oy = (a.hh + c.hh + 18 + (a.ay + c.ay) * driftK) - Math.abs(a.ty - c.ty);
           if(ox > 0 && oy > 0){
             const push = (ox < oy ? ox : oy) / 2 + .5;
             if(ox < oy){ const s = a.tx <= c.tx ? -1 : 1; a.tx += push*s; c.tx -= push*s; }
@@ -2407,21 +2493,22 @@ function initNetwork(){
           }
         }
       }
+      for(const n of tags){
+        n.tx = Math.min(Math.max(n.tx, n.hw + edgeX), W - n.hw - edgeX);
+        n.ty = Math.min(Math.max(n.ty, n.up + edgeT), H - n.dn - edgeB);
+      }
       if(!moved) break;
-    }
-    for(const n of nodes){
-      n.tx = Math.min(Math.max(n.tx, n.hw + 10), W - n.hw - 10);
-      n.ty = Math.min(Math.max(n.ty, n.up + 10), H - n.dn - 12);
     }
     fitted = true; gliding = true;                  // eased into place, not teleported
   }
 
   // ---- preview panel: stage one of the zoom (true FLIP zoom from clicked card) ----
   let preview = null;
-  function closePreview(){
+  function closePreview(restoreFocus){
     if(!preview) return;
     const p = preview; preview = null;
-    const {el, node, anim} = p;
+    const {el, node, anim, kb} = p;
+    const shouldFocus = restoreFocus || kb;
     if(anim) anim.cancel();
     const cur = el.getBoundingClientRect(), w = wrap.getBoundingClientRect(), r = node.el.getBoundingClientRect();
     const W2 = el.offsetWidth || 1;
@@ -2433,31 +2520,41 @@ function initNetwork(){
       { transform: toTf, opacity: 0.85 }
     ], { duration: 340, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'forwards' });
     const restore = () => {
-      if(!preview || preview.node !== node) node.el.style.visibility = '';
+      if(!preview || preview.node !== node){
+        node.el.style.visibility = '';
+        if(shouldFocus && !preview && node.el.isConnected) node.el.focus({ preventScroll: true });
+      }
       if(el.parentElement) el.remove();
     };
     back.onfinish = restore;
     back.oncancel = restore;
   }
-  function openPreview(n){
+  function openPreview(n, fromKb){
     if(preview){
       const same = preview.node === n;
-      closePreview();
+      closePreview(same && fromKb);
       if(same) return;
     }
     const proj = PROJECTS.find(p => p.slug === n.slug);
     const from = n.el.getBoundingClientRect(), box = wrap.getBoundingClientRect();
     const el = document.createElement('div');
     el.className = 'preview';
+    el.tabIndex = 0;
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-modal', 'true');
+    el.setAttribute('aria-label', proj.title + ' preview');
     const yr   = (proj.facts.find(f=>f[0]==='Year')||[])[1] || '';
     const type = (proj.facts.find(f=>f[0]==='Type'||f[0]==='Typology')||[])[1] || '';
+    const ctaText = (matchMedia('(pointer: coarse)').matches || W <= 640)
+      ? 'Tap card to open · Tap × to close'
+      : 'Select card to open · Esc to close';
     el.innerHTML =
         `<div class="pv-shot">${ph(proj.files[0], null, proj.title)}</div>`
       + `<div class="pv-meta">`
-      +   `<p class="pv-name">${proj.title}</p>`
+      +   `<div class="pv-head"><p class="pv-name">${proj.title}</p><button class="pv-close" type="button" aria-label="Close preview">×</button></div>`
       +   `<p class="pv-sub">${proj.place}</p>`
       +   `<p class="pv-line"><span>${yr}</span><span>${type}</span></p>`
-      +   `<p class="pv-cta">Select again to open the project</p>`
+      +   `<p class="pv-cta">${ctaText}</p>`
       + `</div>`;
     el.style.visibility = 'hidden';
     wrap.appendChild(el);
@@ -2480,9 +2577,21 @@ function initNetwork(){
       { transform: endTf,   opacity: 1 }
     ], { duration: 480, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' });
     wrap.classList.add('previewing');
-    preview = {el, node:n, anim};
+    preview = {el, node:n, anim, kb:!!fromKb};
+    if(fromKb) el.focus({ preventScroll: true });
     let opening = false;
+    el.querySelector('.pv-close').addEventListener('click', ev => {
+      ev.stopPropagation();
+      closePreview(ev.detail === 0 || !!fromKb);
+    });
+    el.addEventListener('keydown', ev => {
+      if((ev.key === 'Enter' || ev.key === ' ') && !ev.target.closest('.pv-close')){
+        ev.preventDefault();
+        el.click();
+      }
+    });
     el.addEventListener('click', ev=>{
+      if(ev.target.closest('.pv-close')) return;
       ev.preventDefault(); ev.stopPropagation();
       if(opening) return;
       opening = true;
@@ -2497,9 +2606,9 @@ function initNetwork(){
     });
   }
   wrap.addEventListener('pointerdown', e=>{
-    if(preview && !e.target.closest('.preview') && !e.target.closest('.n-proj')) closePreview();
+    if(preview && !e.target.closest('.preview') && !e.target.closest('.n-proj')) closePreview(false);
   });
-  const onPreviewEsc = e => { if(e.key === 'Escape') closePreview(); };
+  const onPreviewEsc = e => { if(e.key === 'Escape') closePreview(false); };
   window.addEventListener('keydown', onPreviewEsc);
 
   // ---- simulation ----
@@ -2515,13 +2624,15 @@ function initNetwork(){
     const solving = alpha > 0.006 || held;
     if(solving){
     // repulsion
+    const repK = compact ? 2.6 : 3.2;
+    const springLen = 232 * gs;
     for(let i = 0; i < nodes.length; i++){
       for(let j = i+1; j < nodes.length; j++){
         const a = nodes[i], b = nodes[j];
         let dx = b.x - a.x, dy = b.y - a.y;
         let d2 = dx*dx + dy*dy || 0.01;
         const min = (a.r + b.r);
-        const f = ((min * min * 3.2) / d2) * alpha;
+        const f = ((min * min * repK) / d2) * alpha;
         const d = Math.sqrt(d2);
         const ux = dx/d, uy = dy/d;
         a.vx -= ux*f; a.vy -= uy*f;
@@ -2532,23 +2643,25 @@ function initNetwork(){
     for(const l of links){
       const dx = l.b.x - l.a.x, dy = l.b.y - l.a.y;
       const d = Math.hypot(dx, dy) || 0.01;
-      const f = (d - 232) * 0.014 * alpha;
+      const f = (d - springLen) * 0.014 * alpha;
       const ux = dx/d, uy = dy/d;
       l.a.vx += ux*f; l.a.vy += uy*f;
       l.b.vx -= ux*f; l.b.vy -= uy*f;
     }
     }
     if(!solving && !fitted) fitToFrame();
+    const edgeX = compact ? 6 : 10, edgeT = compact ? 6 : 10, edgeB = compact ? 22 : 12;
+    const cxK = compact ? 0.0024 : 0.0014, cyK = compact ? 0.0018 : 0.0014;
     // gentle centring + integrate
     for(const n of nodes){
       if(!solving) break;
-      n.vx += (W/2 - n.x) * 0.0014 * alpha;
-      n.vy += (H/2 - n.y) * 0.0014 * alpha;
+      n.vx += (W/2 - n.x) * cxK * alpha;
+      n.vy += ((H - (compact ? 10 : 0))/2 - n.y) * cyK * alpha;
       if(n === held || n.fixed){ n.vx = 0; n.vy = 0; }
       n.vx *= 0.82; n.vy *= 0.82;
       n.x += n.vx; n.y += n.vy;
-      n.x = Math.min(Math.max(n.x, n.hw + 10), W - n.hw - 10);
-      n.y = Math.min(Math.max(n.y, n.up + 10), H - n.dn - 12);
+      n.x = Math.min(Math.max(n.x, n.hw + edgeX), W - n.hw - edgeX);
+      n.y = Math.min(Math.max(n.y, n.up + edgeT), H - n.dn - edgeB);
     }
 
     // ease into the fitted layout rather than jumping to it
@@ -2574,7 +2687,7 @@ function initNetwork(){
       n.rx = n.x + n.ox;
       n.ry = n.y + n.oy;
       n.rx = Math.min(Math.max(n.rx, n.hw + 4), W - n.hw - 4);
-      n.ry = Math.min(Math.max(n.ry, n.up + 4), H - n.dn - 6);
+      n.ry = Math.min(Math.max(n.ry, n.up + 4), H - n.dn - (compact ? 18 : 6));
       if(n.type === 'proj'){
         // 0 = furthest back, 1 = front. Smoothstepped so cards linger at each
         // depth rather than sweeping through the middle at constant speed.
@@ -2627,14 +2740,19 @@ function initNetwork(){
     const pw = W, ph = H;
     W = wrap.clientWidth; H = wrap.clientHeight;
     if(!(pw > 0 && ph > 0)) return;
+    compact = W <= 640;
+    gs = Math.max(0.46, Math.min(1, Math.min(W / 980, H / 560)));
+    measureNodes();
+    nodes.forEach(n => { n.r = (n.type === 'proj' ? 98 : 26) * gs; });
+    const edgeX = compact ? 6 : 10, edgeT = compact ? 6 : 10, edgeB = compact ? 22 : 12;
     // a placed card keeps its position relative to the frame instead of
     // being swept back into the auto layout
     for(const n of nodes){
       if(!n.fixed) continue;
       const rx = n.relX !== undefined ? n.relX : n.x / pw;
       const ry = n.relY !== undefined ? n.relY : n.y / ph;
-      n.x = Math.min(Math.max(rx * W, n.hw + 10), W - n.hw - 10);
-      n.y = Math.min(Math.max(ry * H, n.up + 10), H - n.dn - 12);
+      n.x = Math.min(Math.max(rx * W, n.hw + edgeX), W - n.hw - edgeX);
+      n.y = Math.min(Math.max(ry * H, n.up + edgeT), H - n.dn - edgeB);
       n.tx = n.x; n.ty = n.y;
     }
     fitted = false; alpha = Math.max(alpha, 0.35);   // re-resolve the free ones
@@ -2659,15 +2777,22 @@ let activeLightbox = null;
 function closeLightbox(immediate){
   if(!activeLightbox) return;
   const lb = activeLightbox; activeLightbox = null;
-  const { overlay, img, srcImg, anim, onKey } = lb;
+  const { overlay, img, srcImg, anim, onKey, kb } = lb;
   window.removeEventListener('keydown', onKey);
   if(anim) anim.cancel();
   const cleanup = () => {
-    if(!activeLightbox || activeLightbox.srcImg !== srcImg) srcImg.style.visibility = '';
+    if(!activeLightbox || activeLightbox.srcImg !== srcImg){
+      srcImg.style.visibility = '';
+      if(!immediate && kb && srcImg.isConnected) srcImg.focus({ preventScroll: true });
+    }
     if(overlay.parentElement) overlay.remove();
   };
   if(immediate || matchMedia('(prefers-reduced-motion: reduce)').matches || !srcImg.isConnected){
     cleanup(); return;
+  }
+  const r = srcImg.getBoundingClientRect();
+  if(r.bottom < 0 || r.top > window.innerHeight){
+    srcImg.scrollIntoView({ block: 'center', behavior: 'instant' });
   }
   const from = img.getBoundingClientRect(), to = srcImg.getBoundingClientRect();
   if(!from.width || !to.width){ cleanup(); return; }
@@ -2681,32 +2806,113 @@ function closeLightbox(immediate){
   back.onfinish = cleanup;
   back.oncancel = cleanup;
 }
-function openLightbox(srcImg){
+function openLightbox(srcImg, fromKb){
   if(activeLightbox){ closeLightbox(); return; }
-  const fig = srcImg.closest('figure');
-  const capText = fig?.querySelector('figcaption')?.innerHTML || srcImg.alt || '';
+  const list = [...document.querySelectorAll('#app .p-hero img, #app .shot-free img')];
+  let idx = list.indexOf(srcImg);
+  if(idx < 0){ list.unshift(srcImg); idx = 0; }
+  const escHtml = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const getMeta = im => {
+    const fig = im.closest('figure');
+    const heroCap = im.closest('[data-hero-cap]')?.getAttribute('data-hero-cap');
+    const capHtml = fig?.querySelector('figcaption')?.innerHTML
+      || (heroCap ? `<b>Overview</b>${escHtml(heroCap)}` : escHtml(im.alt || ''));
+    const tf = im.getAttribute('data-trans-file');
+    const isTrans = Boolean(tf && DIAGRAM_CONFIG[tf]?.transparentBg);
+    return { capHtml, isTrans };
+  };
   const from = srcImg.getBoundingClientRect();
   const overlay = document.createElement('div');
   overlay.className = 'lightbox';
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-modal', 'true');
+  overlay.setAttribute('aria-label', 'Figure lightbox');
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'lightbox-close';
+  closeBtn.type = 'button';
+  closeBtn.setAttribute('aria-label', 'Close lightbox');
+  closeBtn.textContent = 'Close · Esc';
   const img = document.createElement('img');
   img.className = 'lightbox-img';
-  const transFile = srcImg.getAttribute('data-trans-file');
-  if(transFile && DIAGRAM_CONFIG[transFile]?.transparentBg) img.classList.add('is-trans');
+  const firstMeta = getMeta(srcImg);
+  if(firstMeta.isTrans) img.classList.add('is-trans');
   img.src = srcImg.currentSrc || srcImg.src;
   img.alt = srcImg.alt || '';
+  const foot = document.createElement('div');
+  foot.className = 'lightbox-foot';
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'lightbox-nav';
+  prevBtn.type = 'button';
+  prevBtn.dataset.lbPrev = '';
+  prevBtn.setAttribute('aria-label', 'Previous figure');
+  prevBtn.textContent = '← Prev';
   const cap = document.createElement('div');
   cap.className = 'lightbox-cap';
-  cap.innerHTML = capText;
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'lightbox-nav';
+  nextBtn.type = 'button';
+  nextBtn.dataset.lbNext = '';
+  nextBtn.setAttribute('aria-label', 'Next figure');
+  nextBtn.textContent = 'Next →';
+  if(list.length <= 1){ prevBtn.hidden = true; nextBtn.hidden = true; }
+  foot.appendChild(prevBtn);
+  foot.appendChild(cap);
+  foot.appendChild(nextBtn);
+  overlay.appendChild(closeBtn);
   overlay.appendChild(img);
-  if(capText) overlay.appendChild(cap);
+  overlay.appendChild(foot);
   document.body.appendChild(overlay);
-  const onKey = e => { if(e.key === 'Escape') closeLightbox(); };
-  window.addEventListener('keydown', onKey);
-  overlay.addEventListener('click', () => closeLightbox());
-  const lb = { overlay, img, srcImg, anim: null, onKey };
+  const lb = { overlay, img, srcImg, anim: null, onKey: null, kb: !!fromKb };
   activeLightbox = lb;
+  const renderCaption = () => {
+    const m = getMeta(lb.srcImg);
+    const countHtml = list.length > 1 ? `<span class="lightbox-count">${pad(idx + 1)} / ${pad(list.length)}</span>` : '';
+    cap.innerHTML = countHtml + m.capHtml;
+    foot.hidden = !cap.textContent.trim() && list.length <= 1;
+  };
+  renderCaption();
+  let stepSeq = 0;
+  const step = delta => {
+    if(list.length < 2 || activeLightbox !== lb) return;
+    idx = (idx + delta + list.length) % list.length;
+    const nextSrc = list[idx];
+    const token = ++stepSeq;
+    if(lb.anim){ lb.anim.cancel(); lb.anim = null; }
+    overlay.classList.add('open');
+    lb.srcImg.style.visibility = '';
+    nextSrc.style.visibility = 'hidden';
+    lb.srcImg = nextSrc;
+    const m = getMeta(nextSrc);
+    img.classList.toggle('is-trans', m.isTrans);
+    img.alt = nextSrc.alt || '';
+    renderCaption();
+    const nextUrl = nextSrc.currentSrc || nextSrc.src;
+    img.style.opacity = '0.15';
+    const show = () => requestAnimationFrame(() => {
+      if(token === stepSeq && activeLightbox === lb) img.style.opacity = '1';
+    });
+    img.onload = show;
+    img.onerror = show;
+    img.src = nextUrl;
+    if(img.complete && img.naturalWidth) show();
+  };
+  const onKey = e => {
+    if(e.key === 'Escape'){ e.preventDefault(); closeLightbox(); }
+    else if(e.key === 'ArrowLeft'){ e.preventDefault(); step(-1); }
+    else if(e.key === 'ArrowRight'){ e.preventDefault(); step(1); }
+  };
+  lb.onKey = onKey;
+  window.addEventListener('keydown', onKey);
+  prevBtn.addEventListener('click', e => { e.stopPropagation(); step(-1); });
+  nextBtn.addEventListener('click', e => { e.stopPropagation(); step(1); });
+  closeBtn.addEventListener('click', e => { e.stopPropagation(); if(e.detail === 0) lb.kb = true; closeLightbox(); });
+  overlay.addEventListener('click', e => {
+    if(e.target.closest('.lightbox-nav, .lightbox-close')) return;
+    closeLightbox();
+  });
+  if(fromKb) closeBtn.focus({ preventScroll: true });
   const startZoom = () => {
-    if(activeLightbox !== lb) return;
+    if(activeLightbox !== lb || stepSeq !== 0) return;
     const to = img.getBoundingClientRect();
     srcImg.style.visibility = 'hidden';
     if(!matchMedia('(prefers-reduced-motion: reduce)').matches && from.width && to.width){
@@ -2727,12 +2933,19 @@ function openLightbox(srcImg){
 function route(){
   if(activeLightbox) closeLightbox(true);
   const hash = location.hash || '#/';
-  let html, nav='index';
-  if(hash.startsWith('#/project/')){ html = viewProject(hash.split('/')[2]); }
-  else if(hash === '#/about'){ html = viewAbout(); nav='about'; }
-  else if(hash === '#/services'){ html = viewServices(); nav='services'; }
-  else if(hash === '#/contact'){ html = viewContact(); nav='contact'; }
+  const BASE_TITLE = 'Sai Kaung Si Thu — Architecture & Computational Design';
+  let html, nav='index', title=BASE_TITLE;
+  if(hash.startsWith('#/project/')){
+    const slug = hash.split('/')[2];
+    const p = PROJECTS.find(x => x.slug === slug);
+    html = viewProject(slug);
+    if(p) title = `${p.title} — Sai Kaung Si Thu`;
+  }
+  else if(hash === '#/about'){ html = viewAbout(); nav='about'; title = 'About — Sai Kaung Si Thu'; }
+  else if(hash === '#/services'){ html = viewServices(); nav='services'; title = 'Services — Sai Kaung Si Thu'; }
+  else if(hash === '#/contact'){ html = viewContact(); nav='contact'; title = 'Contact — Sai Kaung Si Thu'; }
   else { html = viewIndex(); }
+  document.title = title;
   // The curve lives inside the canvas on the projects view, so it must be
   // rescued to <body> BEFORE the router replaces app.innerHTML — otherwise it
   // is destroyed along with the canvas and never comes back.
@@ -2758,8 +2971,8 @@ function route(){
 
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-drag]')) return;
-  const figImg = e.target.closest('.shot-free img');
-  if(figImg){ openLightbox(figImg); return; }
+  const figImg = e.target.closest('.shot-free img, .p-hero img');
+  if(figImg){ openLightbox(figImg, e.detail === 0); return; }
   const f = e.target.closest('[data-filter]');
   if(f){
     activeFilter = f.dataset.filter;
@@ -2768,6 +2981,12 @@ document.addEventListener('click',e=>{
   }
   const t = e.target.closest('[data-link-to]');
   if(t){ location.hash = t.dataset.linkTo; }
+});
+document.addEventListener('keydown', e => {
+  if((e.key === 'Enter' || e.key === ' ') && document.activeElement?.matches('#app .p-hero img, #app .shot-free img')){
+    e.preventDefault();
+    openLightbox(document.activeElement, true);
+  }
 });
 // clicking the wordmark returns to Projects and puts the layout back
 document.getElementById('mark').addEventListener('click', e=>{
